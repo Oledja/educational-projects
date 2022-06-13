@@ -5,8 +5,7 @@ const refreshTokenService = require('./refreshTokenServise');
 const { generateRefreshToken } = require('./refreshTokenServise');
 const tokensRepository = require('../repositories/tokensRepository');
 
-class UserService {
-    
+class UserService {   
     async signUp(user) {
         const candidate = await usersRepository.find({ email: user.email });
         if (candidate) {
@@ -42,12 +41,10 @@ class UserService {
     }
 
     async getMe(url, user) {
-         console.log(url);
-         console.log(user);
         return {
-                "request_num": url.substring(url.length - 1),
-                "data": {
-                    "username": user.email
+            "request_num": url.substring(url.length - 1),
+            "data": {
+                "username": user.email
                 }}
     }
 }

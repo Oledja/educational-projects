@@ -1,7 +1,6 @@
 const {MongoClient} = require('mongodb');
 const client = new MongoClient("mongodb+srv://oleg:pass@cluster0.xmvy8bw.mongodb.net/?retryWrites=true&w=majority");
 
-
 class UserRepository {
 
     async save(user) {
@@ -24,6 +23,5 @@ class UserRepository {
         } 
     }
 }
-
 
 module.exports = new UserRepository();

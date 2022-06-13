@@ -2,7 +2,6 @@ const tokensRepository = require('../repositories/tokensRepository');
 const {secret} = require('../config/config');
 const jwt = require('jsonwebtoken');
 class RefreshTokenService {
-
     async add(userId, refreshToken) {
         try {
             await tokensRepository.add(userId, refreshToken);
