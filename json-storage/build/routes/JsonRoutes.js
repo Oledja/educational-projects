@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.router = void 0;
+const express_1 = require("express");
+const jsonController_1 = require("../controllers/jsonController");
+const jsonMiddleware_1 = require("../middleware/jsonMiddleware");
+exports.router = (0, express_1.Router)();
+exports.router.get("/:route", jsonController_1.getJson);
+exports.router.get("/", jsonController_1.homePage);
+exports.router.post("/:route", jsonMiddleware_1.jsonValidator, jsonController_1.addJson);
