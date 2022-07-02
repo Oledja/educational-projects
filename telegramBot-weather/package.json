@@ -1,0 +1,19 @@
+{
+  "name": "telegrambot-weather",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "node-telegram-bot-api": "^0.58.0",
+    "nodemon": "^2.0.18"
+  },
+  "devDependencies": {},
+  "description": ""
+}
