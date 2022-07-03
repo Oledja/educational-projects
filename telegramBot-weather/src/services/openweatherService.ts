@@ -55,7 +55,6 @@ export default class OpenweatherService {
                     let time: string = w.dt_txt.split(" ")[1];
                     time = time.split(":")[0];
                     if (time === "03" || time === "09" || time === "15") {
-                        console.log("fasle");
                         return false;
                     }
                     return true; 

@@ -3,7 +3,6 @@ import config from "./config/config";
 import MonobankService from "./services/monobankService";
 import PrivatbankService from "./services/privatbankService";
 import OpenweatherService from "./services/openweatherService";
-import { channel } from "diagnostics_channel";
 
 const bot: TelegramBot = new TelegramBot(config.telegramBot.token, {polling: true});
 const openweatherService: OpenweatherService = new OpenweatherService();
