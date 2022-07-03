@@ -55,7 +55,6 @@ bot.on("callback_query", async (query) => {
             if (query.data === "3") {
                 await bot.sendMessage(chatId, await openweatherService.getWeatherForecastThreeHours());
                 startMenu(chatId);
-        
             } else if (query.data === "6") {
                 await bot.sendMessage(chatId, await openweatherService.getWeatherForecastSixHours());
                 startMenu(chatId);
@@ -71,5 +70,4 @@ bot.on("callback_query", async (query) => {
             console.log(err.message);
         }
     }
-    
 })
