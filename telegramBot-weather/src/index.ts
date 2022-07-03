@@ -12,8 +12,8 @@ const monobankService: MonobankService = new MonobankService();
 const openweather = {
     reply_markup: {
         inline_keyboard: [
-            [{text: "С интервалом 3 часа", callback_data: "3"},
-            {text: "С интервалом 6 часов", callback_data: "6"}]
+            [{text: "С интервалом 3 часа", callback_data: "3"}],
+            [{text: "С интервалом 6 часов", callback_data: "6"}]
         ]
     }
 }
@@ -27,9 +27,9 @@ const exchangeRate = {
     }
 }
 
-const startMenu = (chatId: number) => {
-    bot.sendMessage(chatId, "Погода в Днепре: ", openweather);
-    bot.sendMessage(chatId, "Курс валют", exchangeRate);
+const startMenu = async (chatId: number) => {
+    await bot.sendMessage(chatId, "Погода в Днепре: ", openweather);
+    await bot.sendMessage(chatId, "Курс валют", exchangeRate);
 }
 
 const usdExchangeRate = async (chatId: number) => {
