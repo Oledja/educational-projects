@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "target": "ES2016",
+        "lib": ["ESNext"],
+        "moduleResolution": "node"
+    },
+    "exclude": ["node_modules"]
+}
