@@ -3,7 +3,7 @@
         "sourceMap": true,
         "target": "ES2016",
         "lib": ["ESNext"],
-        "moduleResolution": "node"
+        "moduleResolution": "node",
     },
     "exclude": ["node_modules"]
 }
