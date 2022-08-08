@@ -10,16 +10,14 @@ const dynamoDBRepository: DynamodbRepository = new DynamodbRepository();
 export async function uploadImage(
   event: APIGatewayEvent
 ): Promise<APIGatewayProxyResult> {
-  const { username } = event.requestContext.authorizer.claims;
+  const username: string = event.requestContext.authorizer.claims as string;
   const imageName: string = event.pathParameters?.imageName || "image";
   const uploadUrl: PresignedPost = await imageService.saveImage(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     username,
     imageName
   );
   return {
     statusCode: 200,
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     body: JSON.stringify(uploadUrl),
   };
 }
@@ -39,8 +37,7 @@ export async function deleteImage(
 export async function getImages(
   event: APIGatewayEvent
 ): Promise<APIGatewayProxyResult> {
-  const { username } = event.requestContext.authorizer.claims;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const username: string = event.requestContext.authorizer.claims as string;
   const images: object = await dynamoDBRepository.getAllImages(username);
   return {
     statusCode: 200,
