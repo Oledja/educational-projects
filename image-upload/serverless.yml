@@ -1,0 +1,210 @@
+service: image-upload-api
+
+plugins: 
+  - serverless-webpack
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: us-east-1
+  iam:
+    role:
+      name: imageUploadRole
+      statements:
+        - Effect: "Allow"
+          Action:
+              - "s3:PutObject"
+              - "s3:GetObject"
+              - "s3:DeleteObject"
+          Resource:
+            Fn::Join:
+                - ""
+                - - { "Fn::GetAtt": ["ImagesBucket", "Arn"] }
+                  - "/*"        
+        - Effect: "Allow"
+          Action:
+              - "dynamodb:PutItem"
+              - "dynamodb:GetItem"
+              - "dynamodb:DeleteItem"
+              - "dynamodb:Scan"
+              - "dynamodb:Query"
+          Resource:
+            - { "Fn::GetAtt": ["ImageTable", "Arn"] } 
+            - Fn::Join:
+              - ""
+              - - { "Fn::GetAtt": ["ImageTable", "Arn"] }
+                - "/index/username-index"  
+
+functions:
+  upload-image:
+    handler: handler.uploadImage
+    events:
+      - http:
+          path: api/v1/image-upload/create/{imageName}
+          method: get
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !Ref ApiGatewayAuthorizer
+            scopes: email
+  delete-image:
+    handler: handler.deleteImage
+    events:
+      - http:
+          path: api/v1/image-upload/delete/{imageId}
+          method: delete
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !Ref ApiGatewayAuthorizer
+            scopes: email
+  get-images:
+    handler: handler.getImages
+    events:
+      - http:
+          path: api/v1/image-upload/images
+          method: get
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !Ref ApiGatewayAuthorizer
+            scopes: email
+  registration:
+    handler: handler.registration
+    events:
+      - http:
+          path: api/v1/image-upload/registration
+          method: get
+          cors: true
+
+resources:
+  Resources:
+# S3 Bucket  
+    ImagesBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: "bucket-1mages"
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - POST
+                - DELETE
+              MaxAge: 3000
+    ImageBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: "bucket-1mages"
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:  
+                - "s3:PutObject"
+                - "s3:GetObject"
+              Resource: 
+                - { "Fn::GetAtt": ["ImagesBucket", "Arn"] } 
+                - Fn::Join:
+                  - ""
+                  - - { "Fn::GetAtt": ["ImagesBucket", "Arn"] }
+                    - "/*" 
+              Principal: "*" 
+# Cognito              
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: "user-pool"
+        UsernameConfiguration:
+          CaseSensitive: false      
+        Schema:
+          - Name: email
+            Required: true
+        AccountRecoverySetting:
+          RecoveryMechanisms:
+            - Name: verified_email
+              Priority: "1"
+            - Name: verified_phone_number
+              Priority: "2"
+        AutoVerifiedAttributes: 
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: "8"
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: true
+            RequireUppercase: true
+            TemporaryPasswordValidityDays: "7"
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: user-pool-ui
+        AllowedOAuthFlowsUserPoolClient: true
+        AllowedOAuthFlows:
+          - code
+          - implicit
+        AllowedOAuthScopes:
+          - phone
+          - email
+          - openid
+          - profile
+          - aws.cognito.signin.user.admin
+        SupportedIdentityProviders: 
+          - COGNITO  
+        CallbackURLs: 
+          - https://image-upload-app.com/welcome
+        LogoutURLs: 
+          - https://image-upload-app.com/signout
+        UserPoolId: !Ref CognitoUserPool
+    CognitoUserPoolDomain:
+        Type: AWS::Cognito::UserPoolDomain
+        Properties:
+          UserPoolId: !Ref CognitoUserPool
+          Domain: "image-upload-user-pool-domain"     
+# GatewayAuth
+    ApiGatewayAuthorizer: 
+      Type: AWS::ApiGateway::Authorizer
+      Properties: 
+        Name: CognitoUserPool
+        Type: COGNITO_USER_POOLS
+        IdentitySource: method.request.header.Authorization
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ProviderARNs: 
+          - Fn::GetAtt:
+              - CognitoUserPool
+              - Arn    
+# dynamoDB
+    ImageTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ImageTable
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        AttributeDefinitions:
+          - AttributeName: imageId
+            AttributeType: S
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: imageId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: username-index
+            KeySchema:
+              - AttributeName: username
+                KeyType: HASH
+            Projection: 
+              NonKeyAttributes:
+              - imageUrl
+              - imageName
+              - imageId
+              ProjectionType: INCLUDE 
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1      
