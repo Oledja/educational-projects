@@ -4,7 +4,7 @@ const {secret} = require('../config/config');
 module.exports = function (req, res, next) {
     try {
         if (req.headers.authorization == undefined) {
-            return res.status(401).json({message: "Unauthorised"});
+            return res.status(401).json({message: "Unauthorized"});
         }
         const token = req.headers.authorization.split(" ")[1];
         const decodedData = jwt.verify(token, secret);
@@ -12,6 +12,6 @@ module.exports = function (req, res, next) {
         next();
     } catch (err) {
         console.log(err);
-        return res.status(401).json({message: "Unauthorised"});
+        return res.status(401).json({message: "Unauthorized"});
     }
 };
