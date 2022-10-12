@@ -1,0 +1,10 @@
+enum Time {
+  THIRTY_MINUTES = 60000 * 30,
+  ONE_HOUR = 60000 * 60,
+  THREE_HOURS = 60000 * 180,
+  SIX_HOURS = 60000 * 360,
+  TWENTY_HOURS = 60000 * 720,
+  DAY = 60000 * 1440,
+}
+
+export = Time;
