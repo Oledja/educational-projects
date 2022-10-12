@@ -1,15 +1,15 @@
 import axios from "axios";
-import config from "../config/config";
+import IOpenweatherResponse from "../interfaces/IOpenweatherResponse";
+import * as dotenv from "dotenv";
+dotenv.config();
 
-export default class OpenweatherClient {
-    async getCurrentWeatherForecast(): Promise<any> {
-        return axios.get(config.openweather.endpoint) 
-            .then(function(response) {
-                return response.data.list;
-            }
-    )}
+class OpenweatherClient {
+  async getCurrentWeatherForecast(): Promise<IOpenweatherResponse[]> {
+    const {
+      data: { list: weatherResult },
+    } = await axios.get(process.env.OPENWEATHER_URL);
+    return weatherResult;
+  }
 }
 
-
-
-
+export default OpenweatherClient;

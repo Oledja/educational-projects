@@ -1,12 +1,16 @@
 import axios from "axios";
-import config from "../config/config";
+import MonobankResponse from "../interfaces/IMonobankResponse";
+import * as dotenv from "dotenv";
+dotenv.config();
 
-export default class MonobankClient {
-    public async getCurrentExchangeRate(): Promise<any> {
-        return axios.get(config.monobank.endpoint) 
-            .then(function(response) {
-                return response.data;
-            }
-    )}
+class MonobankClient {
+  public async getCurrentExchangeRate(): Promise<MonobankResponse[]> {
+    const { data: monoResult } = await axios.get(process.env.MONOBANK_URL);
+    return monoResult.filter(
+      (value: { currencyCodeB: number; rateBuy: number }) =>
+        value.currencyCodeB === 980 && value.rateBuy
+    );
+  }
 }
 
+export default MonobankClient;

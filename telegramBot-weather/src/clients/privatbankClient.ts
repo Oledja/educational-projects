@@ -1,11 +1,15 @@
 import axios from "axios";
-import config from "../config/config";
+import IPrivatebankResponse from "../interfaces/IPrivatbankResponse";
+import * as dotenv from "dotenv";
+dotenv.config();
 
-export default class PrivatbankClient {
-    public async getCurrentExchangeRate(): Promise<any> {
-        return axios.get(config.privatbank.endpoint) 
-            .then(function(response) {
-                return response.data;
-            }
-    )}        
+class PrivatbankClient {
+  async getCurrentExchangeRate(): Promise<IPrivatebankResponse[]> {
+    const { data: privatResult } = await axios.get(process.env.PRIVATBANK_URL);
+    return privatResult.filter(
+      (value: { ccy: string }) => value.ccy === "USD" || value.ccy === "EUR"
+    );
+  }
 }
+
+export default PrivatbankClient;
