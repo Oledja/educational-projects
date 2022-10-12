@@ -1,49 +1,76 @@
-const {readFileSync} = require('fs');
-const ipToInt = require('ip-to-int');
+const fs = require("fs");
 
-let ipAdresses = readFileSync('./IP2LOCATION-LITE-DB1.CSV', 'utf-8').split('\n');
+const LOCATIONS = "./IP2LOCATION-LITE-DB1.CSV";
+const readIpAddresses = path => {
+  try {
+    if (fs.existsSync(path)) {
+      return fs.readFileSync(path, "utf-8").split("\n");
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-function findGeolocationByIp(ip) {
-    const ipInt = ipToInt(ip).toInt();
-    let result = findGeolocationInDB(ipInt, ipAdresses);
-    result = parseIpFromDB(result);
-    return showResult(result);
-}
+const findLolocation = reqIp => {
+  const ip = ipToInt(reqIp);
+  const addressesFromFile = readIpAddresses(LOCATIONS);
+  const parsedAdresses = parseAddresses(addressesFromFile);
+  const result = findLocationInDB(ip, parsedAdresses);
+  return prepareResponse(result);
+};
 
-function parseIpFromDB(ip) {
-    let location = ip.split(',');
-    const start = parseInt(location[0].replaceAll('\"', ''));
-    const end = parseInt(location[1].replaceAll('\"', ''));
-    const country = location[3].replaceAll('\r', '');
+const findLocationInDB = (ip, ipAddresses) => {
+  const index = Math.round(ipAddresses.length / 2);
+  const current = ipAddresses[index];
 
+  if (ip < current.start) {
+    return findLocationInDB(ip, ipAddresses.slice(0, index));
+  } else if (ip > current.end) {
+    return findLocationInDB(ip, ipAddresses.slice(index, ipAddresses.length));
+  } else {
+    return ipAddresses[index];
+  }
+};
+
+const prepareResponse = location => {
+  const start = intToIp(location.start);
+  const end = intToIp(location.end);
+  return `ip: ${start} - ${end} ${location.country}`;
+};
+
+const parseAddresses = ipAddresses => {
+  return ipAddresses.map(ip => {
+    data = ip.replaceAll('"', "").replaceAll("\r", "").split(",");
     return {
-        start: start,
-        end: end,
-        country: country
-    }
-}
+      start: parseInt(data[0]),
+      end: parseInt(data[1]),
+      country: data[3],
+    };
+  });
+};
 
-function findGeolocationInDB(ip, locations) {
-    if (locations.length == 1) {
-        return locations[0];
-    }
-    let index = Math.round(locations.length / 2);
-    let current = parseIpFromDB(locations[index]);
+const ipToInt = ip => {
+  const items = ip.split(".");
+  let power = 3;
+  let result = 0;
 
-    if (ip < current.start) {
-        return findGeolocationInDB(ip, locations.slice(0, index));
-    } else if (ip > current.end) {
-        return findGeolocationInDB(ip, locations.slice(index, locations.length));
-    } else {
-        return locations[index];
-    }
-}
+  items.forEach(el => {
+    result += parseInt(el) * Math.pow(256, power);
+    power--;
+  });
+  return result;
+};
 
-function showResult(location) {
-    const start = ipToInt(location.start).toIP();
-    const end = ipToInt(location.end).toIP();
-    return `ip: ${start} - ${end} ${location.country}`;
-}
+const intToIp = int => {
+  return (
+    ((int >> 24) & 0xff) +
+    "." +
+    ((int >> 16) & 0xff) +
+    "." +
+    ((int >> 8) & 0xff) +
+    "." +
+    (int & 0xff)
+  );
+};
 
-module.exports = findGeolocationByIp;
-
+module.exports = findLolocation;
