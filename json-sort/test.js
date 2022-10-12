@@ -1,6 +1,6 @@
-const getAllAnswers = require('./main');
-const {readFileSync} = require('fs');
+const { readFileSync } = require('fs');
+const getAllResponses = require('./main');
+const axios = require("axios").default;
 
-let endpoints = new Array(readFileSync('./endpoints.txt', 'utf-8').split('\r\n'));
-
-getAllAnswers(endpoints);
+let endpoints = readFileSync('./endpoints.txt', 'utf-8').split('\r\n');
+const res = getAllResponses(endpoints);
