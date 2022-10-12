@@ -1,5 +1,5 @@
 const {getNextDay, isWorkHours, isWorkDay, getWorkDay, getWorkTime, prepareResponse, 
-    parseRequest, getDeadline, getTime, getPrice, calkSumAndTime} = require('./service');
+    parseRequest, getDeadline, getTime, getPrice} = require('./service');
 
 test("getNextDay returns next day 10:00:00 am", () => {
     const date = new Date("2017-01-26");
