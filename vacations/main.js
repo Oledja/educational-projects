@@ -1,30 +1,23 @@
-const _ = require('lodash');
-const vacations = require('./vacations');
-
-function transformVacations (employees) {
+const transformVacations = employees => {
   let result = [];
-  
-  for (let i = 0; i < employees.length; i++) {
-    let current = transformToNewFormat(employees[i]);
-    let maybeNew = result.find(e => _.isEqual(e.userId, current.userId));
+
+  const fromatedEmployee = employees.map(empl => {
+    return {
+      userId: empl.user._id,
+      name: empl.user.name,
+      weekendDates: [{ startDays: empl.startDate, endDate: empl.endDate }],
+    };
+  });
+
+  for (empl of fromatedEmployee) {
+    let maybeNew = result.find(e => e.userId === empl.userId);
+
     if (!maybeNew) {
-      result.push(current);
+      result.push(empl);
     } else {
-      maybeNew.weekendDates.push(current.weekendDates[0]);
+      maybeNew.weekendDates.push(empl.weekendDates[0]);
     }
   }
   return result;
-}
-
-function transformToNewFormat (employee){
-  return {  userId: employee.user._id,
-            name: employee.user.name,
-            weekendDates: [
-              {startDays: employee.startDate, endDate: employee.endDate}
-            ]
-          }
-}
-
+};
 module.exports = transformVacations;
-
-

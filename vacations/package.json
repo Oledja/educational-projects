@@ -1,5 +1,11 @@
 {
-  "dependencies": {
-    "lodash": "^4.17.21"
-  }
+  "name": "vacations",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
