@@ -1,20 +1,17 @@
 process.env.NTBA_FIX_319 = 1;
-const TelegramBot = require('node-telegram-bot-api');
-const axios = require('axios').default;
-const { updateImage } = require("./util");
+const TelegramBot = require("node-telegram-bot-api");
+const dotenv = require("dotenv");
 
-const token = "5452967029:AAEMGGNUJaeV13nEnIbe3l35zfamvH9NGO0";
-const bot = new TelegramBot(token, {polling: true});
+dotenv.config();
 
+const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
 
 bot.on("message", async (msg) => {
-    const text = msg.text;
-    const chatId = msg.chat.id;
-    if (text === "photo") {
-        updateImage();
-        await bot.sendPhoto(chatId,__dirname + "/image.jpg");
-    } else {
-        bot.sendMessage(chatId, `Вы написали "${text}"`);
-    }
-})
-
+  const text = msg.text;
+  const chatId = msg.chat.id;
+  if (text === "photo") {
+    bot.sendPhoto(chatId, `https://picsum.photos/200/300?t=${Date.now()}`);
+  } else {
+    bot.sendMessage(chatId, `Вы написали "${text}"`);
+  }
+});
