@@ -1,60 +1,60 @@
-const {readFileSync} = require('fs');
+const fs = require("fs");
 
-function uniqueValues(files) {
-    let allUniqueValues = new Set();
-    for (let i = 0; i < files.length; i++) {
-        readFileAndSplit(files[i])
-        .forEach(element => allUniqueValues.add(element));
+const uniqueValues = (files) => {
+  const allUniqueValues = new Set();
+  for (let file of files) {
+    readFileAndSplit(file).forEach((element) => allUniqueValues.add(element));
+  }
+  return allUniqueValues.size;
+};
+
+const existInAllFiles = (files) => {
+  let mapUniqueValues = findAllUniqueValues(files);
+  let count = 0;
+
+  for (const [, value] of mapUniqueValues) {
+    if (value == 20) count++;
+  }
+  return count;
+};
+
+const existInAtLeastTen = (files) => {
+  const mapUniqueValues = findAllUniqueValues(files);
+  let count = 0;
+
+  for (const [, value] of mapUniqueValues) {
+    if (value >= 10) count++;
+  }
+  return count;
+};
+
+const findAllUniqueValues = (files) => {
+  const map = new Map();
+
+  files.forEach((file) => {
+    let unique = uniqueValuesInFile(file);
+    for (const val of unique) {
+      if (!map.has(val)) {
+        map.set(val, 1);
+      } else {
+        map.set(val, map.get(val) + 1);
+      }
     }
-    return allUniqueValues.size;
-}
+  });
+  return map;
+};
 
-function existInAllFiles(files) {
-    let mapUniqueValues = findAllUniqueValues(files);
-    let count = 0;
+const uniqueValuesInFile = (file) => {
+  let allValues = readFileAndSplit(file);
+  return new Set(allValues);
+};
 
-    for (const [key, value] of mapUniqueValues) {
-        if (value == 20) {
-            count++;
-        }
-    }
-    return count;
-}
+const readFileAndSplit = (path) => {
+  try {
+    if (fs.existsSync(path)) return fs.readFileSync(path, "utf-8").split("\n");
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-function existInAtLeastTen(files) {
-    let mapUniqueValues = findAllUniqueValues(files);
-    let count = 0;
-    
-    for (const [, value] of mapUniqueValues) {
-        if (value >= 10) {
-            count++;
-        }
-    }
-    return count;
-}
-
-function findAllUniqueValues(files) {
-    let map = new Map();
-    for (let i = 0; i < files.length; i++) {
-        let unique = uniqueValuesInFile(files[i]); 
-        for (const val of unique) {
-            if (!map.has(val)) {
-                map.set(val, 1);
-            } else {
-                map.set(val, map.get(val) + 1);
-            }
-        }
-    }
-    return map;
-}
-
-function uniqueValuesInFile(file) {
-    let allValues = readFileAndSplit(file);
-    return new Set(allValues);
-}
-
-function readFileAndSplit(file) {
-    return readFileSync(file, 'utf-8').split('\n');
-}
-
-module.exports = {uniqueValues, existInAllFiles, existInAtLeastTen};
+module.exports = { uniqueValues, existInAllFiles, existInAtLeastTen };
