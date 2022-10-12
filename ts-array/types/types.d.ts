@@ -19,7 +19,9 @@ declare global {
      * Returns a Map containing the elements from the given array indexed by the key returned from keySelector function applied to each element.
      * @param keySelector A function that takes an array element and returns the key.
      */
-    associateBy<K extends string | number | symbol>(keySelector: (key: T) => K): {[key: string | number | symbol]: T}
+    associateBy<K extends string | number | symbol>(
+      keySelector: (key: T) => K
+    ): { [key: string | number | symbol]: T };
     /**
      * Returns an average value of elements in the array.
      */
@@ -79,19 +81,22 @@ declare global {
      * Returns the first element yielding the largest value of the given function.
      * @param selector A function that takes an array element and returns the value by which the minimum will be searched.
      */
-     minBy<R>(selector: (value: T) => R): T;
+    minBy<R>(selector: (value: T) => R): T;
     /**
      * A function that returns the sum of the numbers returned by the selector.
      * @param selector A function that takes an array element and returns a number.
      */
-     countBy(selector: (value: T) => number): number;
+    countBy(selector: (value: T) => number): number;
     /**
-     * Groups elements of the original array by the key returned by the given keySelector function applied to 
+     * Groups elements of the original array by the key returned by the given keySelector function applied to
      * each element and returns a object where each group key is associated with a array of corresponding elements.
      * @param keySelector A function that takes an element of an array and returns a key to group the elements of the given array.
      * @param valueTransform A function that converts values to be grouped by key.
      */
-     groupBy<K extends string | number | symbol, V>(keySelector: (key: T) => K, valueTransform?: (value: T) => V): {[key: string | number | symbol]: T[]}
+    groupBy<K extends string | number | symbol, V>(
+      keySelector: (key: T) => K,
+      valueTransform?: (value: T) => V
+    ): { [key: string | number | symbol]: T[] };
   }
 }
 
