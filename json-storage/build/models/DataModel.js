@@ -22,21 +22,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = __importDefault(require("../config/config"));
 const mongoose_1 = __importStar(require("mongoose"));
-mongoose_1.default.connect(config_1.default.mongo.url, config_1.default.mongo.options)
-    .then(result => {
-    console.log("MongoDB connextion successful");
-})
-    .catch(error => {
-    console.log(error);
+const DataModel = new mongoose_1.Schema({
+    route: {
+        type: String,
+        required: true,
+    },
+    data: {
+        type: String,
+        required: true,
+    },
 });
-const JsonSchema = new mongoose_1.Schema({
-    route: { type: String, required: true },
-    data: { type: Object, required: true }
-});
-exports.default = mongoose_1.default.model("json-storage", JsonSchema);
+exports.default = mongoose_1.default.model("jsons", DataModel);
+//# sourceMappingURL=DataModel.js.map

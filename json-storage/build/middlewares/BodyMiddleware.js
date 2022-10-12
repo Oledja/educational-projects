@@ -1,18 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jsonValidator = void 0;
-function jsonValidator(req, res, next) {
+exports.bodyValidator = void 0;
+const bodyValidator = (req, res, next) => {
     try {
-        let json = req.body;
-        if (typeof json === "string") {
+        let { body: data } = req;
+        if (typeof data === "string") {
             try {
-                json = JSON.parse(JSON.stringify(json));
-                req.body = JSON.parse(json);
+                data = JSON.parse(data);
+                req.body = JSON.stringify(data);
             }
             catch (err) {
                 throw new Error("Json is incorrect");
             }
         }
+        req.body = JSON.stringify(data);
         next();
     }
     catch (err) {
@@ -20,5 +21,6 @@ function jsonValidator(req, res, next) {
             res.status(400).json({ Error: err.message });
         }
     }
-}
-exports.jsonValidator = jsonValidator;
+};
+exports.bodyValidator = bodyValidator;
+//# sourceMappingURL=BodyMiddleware.js.map
