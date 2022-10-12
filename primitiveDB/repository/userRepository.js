@@ -1,38 +1,32 @@
 import fs from "fs";
-import path from 'path';
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import path from "path";
+import { fileURLToPath } from "url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export function getUser(username) {
-    const allUsers = getAllUser();
-    return allUsers.filter(user => user.name === username);
-}
+const PATH_TO_FILE = __dirname + "\\userDB.txt";
 
-export function saveUser(user) {
-    try {
-        fs.appendFileSync(__dirname + "\\userDB.txt", JSON.stringify(user) + "\n");
-    } catch (err) {
-        console.log(err);
-    }
-}
+const getUser = (username) => {
+  const allUsers = getAllUser();
+  return allUsers.filter((user) => user.name === username);
+};
 
-function getAllUser() {
-    try {
-        let allUsersFromDB = fs.readFileSync(__dirname + "\\userDB.txt", "utf-8").split("\n");
-        let allUsers = [];
-        for (let i = 0; i < allUsersFromDB.length; i++) {
-            if (allUsersFromDB[i] !== "") {
-                allUsers.push(JSON.parse(allUsersFromDB[i]));
-            }
-        }
-        return allUsers;
-    } catch (err) {
-        console.log(err);
-    }
-}
+const saveUser = (user) => {
+  try {
+    fs.appendFileSync(PATH_TO_FILE, JSON.stringify(user) + "\n");
+  } catch (err) {
+    console.log(err);
+  }
+};
 
+const getAllUser = () => {
+  try {
+    const allUsers = fs.readFileSync(PATH_TO_FILE, "utf-8").split("\n");
+    return allUsers
+      .filter((user) => user !== "")
+      .map((user) => JSON.parse(user));
+  } catch (err) {
+    throw new Error("File doesn't exist");
+  }
+};
 
-
-
-    
+export { getUser, saveUser };
