@@ -1,4 +1,4 @@
-service: getting-started
+service: serverless
 
 plugins:
   - serverless-webpack
@@ -10,13 +10,13 @@ provider:
 
 functions:
   hello:
-    handler: handler.hello
+    handler: handler.helloName
     events:
       - http:
           method: get
           path: hello
   fibonacci:
-    handler: handler.fibonacchiHandler
+    handler: handler.fibonacchi
     events:
       - http:
           method: get
