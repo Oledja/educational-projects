@@ -1,7 +1,7 @@
 import {
   APIGatewayEvent,
   APIGatewayProxyHandler,
-  APIGatewayProxyResult
+  APIGatewayProxyResult,
 } from "aws-lambda";
 import middy from "@middy/core";
 import { reqParamValidate } from "./reqParamValidate";
@@ -10,26 +10,40 @@ import * as Joi from "joi";
 
 const schema: Joi.StringSchema = Joi.string()
   .min(4)
-  .pattern(new RegExp("^([^0-9]*)$"));
+  .pattern(/^([^0-9]*)$/);
 
 function buildResponse(statusCode: number, body: string) {
   return {
-    statusCode: statusCode,
+    statusCode,
     headers: {
       "Content-Type": "application/json",
     },
-    body: `Hello ${JSON.stringify(body)}`,
+    body: `${JSON.stringify(body)}`,
   };
 }
 
-const helloHandler = async (
+const hello = async (
   event: APIGatewayEvent
 ): Promise<APIGatewayProxyResult> => {
-  const name = event.queryStringParameters.name;
-  const response = buildResponse(200, name);
+  const { name } = event.queryStringParameters;
+  const response = buildResponse(200, `Hello ${name}`);
   return response;
 };
 
-export const hello: APIGatewayProxyHandler = middy(helloHandler)
+export async function fibonacchi(): Promise<APIGatewayProxyResult> {
+  const fib = (n: number): number => {
+    if (n === 0) return 0;
+    if (n === 1) return 1;
+    return fib(n - 2) + fib(n - 1);
+  };
+  const result: number[] = [];
+  for (let i = 0; i <= 10; i++) {
+    result.push(fib(i));
+  }
+  const response = buildResponse(200, result.join(","));
+  return response;
+}
+
+export const helloName: APIGatewayProxyHandler = middy(hello)
   .use(reqParamValidate(schema))
   .use(errorHandler());
