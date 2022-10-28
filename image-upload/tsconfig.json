@@ -1,9 +1,15 @@
 {
     "compilerOptions": {
-        "sourceMap": true,
-        "target": "ES2016",
-        "lib": ["ESNext"],
-        "moduleResolution": "node",
-    },
-    "exclude": ["node_modules"]
-}
+      "target": "es2016",
+      "module": "commonjs",
+      "rootDir": "./src",
+      "outDir": "./build/",
+      "esModuleInterop": true,
+      "forceConsistentCasingInFileNames": true,
+      "strict": true,
+      "strictPropertyInitialization": true,
+      "skipLibCheck": true
+    }
+  }
+  
+  
