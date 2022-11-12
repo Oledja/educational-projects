@@ -1,11 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Entity,
-  BaseEntity,
-  Column,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { Entity, BaseEntity, Column, ManyToOne } from "typeorm";
+import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";
 import type { Store } from "./store";
 
 @Entity("users")

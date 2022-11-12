@@ -2,10 +2,17 @@ service: redistribution
 
 plugins: 
   - serverless-webpack
+  - serverless-dotenv-plugin
+
+useDotenv: true
+
 provider:
   name: aws
   runtime: nodejs14.x
-  region: us-east-1
+  region: ${env:REGION}
+  environment:
+    RDS_HOST: {"Fn::GetAtt": ["MyRDSPostgres","Endpoint.Address"]}
+    SQS_INVOCATION_URL: !Ref MyQueue
 
   iam:
     role:
@@ -17,38 +24,46 @@ provider:
             - "sqs:ReceiveMessage"
             - "sqs:DeleteMessage"
             - "sqs:GetQueueUrl"
-          Resource: "arn:aws:sqs:${self:provider.region}:*:MyQueue"
+            - "sqs:GetQueueAttributes"
+          Resource: "arn:aws:sqs:${self:provider.region}:*:${env:SQS_QUEUE_NAME}"
 
 functions:
   sender:
-    handler: src/lambda/sender.handler
+    handler: handler.sender
     events:
       - http:
           path: api/v1/redistribution
           method: post
   receiver: 
-    handler: src/lambda/receiver.handler
+    handler: handler.receiver
     events:
       - sqs:
           arn:
             Fn::GetAtt:
               - MyQueue
               - Arn  
-          batchSize: 10
+          batchSize: 1
+  createDB:
+    handler: handler.createDB
+    events:
+      - http:
+          path: api/v1/redistribution/createDB
+          method: get
 
 resources:
   Resources:
     MyQueue:
       Type: "AWS::SQS::Queue"
       Properties:
-        QueueName: "MyQueue"
-# RDS MySql
-    # MySqlDB:
-    #   Type: AWS::RDS::DBInstance
-    #   Properties:
-    #     MasterUsername: 
-    #     MasterUserPassword: 
-    #     DBInstanceClass: db.t2.micro
-    #     Engine: mysql
-    #     AllocatedStorage: 20
+        QueueName: ${env:SQS_QUEUE_NAME}
+
+    MyRDSPostgres:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        DBName: ${env:RDS_DATABASE}
+        MasterUsername: ${env:RDS_USERNAME}
+        MasterUserPassword: ${env:RDS_PASSWORD}
+        Engine: postgres
+        DBInstanceClass: db.t3.micro
+        AllocatedStorage: 20
     

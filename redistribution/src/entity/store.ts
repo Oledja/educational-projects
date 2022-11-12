@@ -1,13 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Entity,
-  BaseEntity,
-  Column,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-} from "typeorm";
+import { Entity, BaseEntity, Column, JoinColumn } from "typeorm";
+import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";
+import { OneToMany } from "typeorm/decorator/relations/OneToMany";
+import { OneToOne } from "typeorm/decorator/relations/OneToOne";
 import { Counter } from "./counter";
 import { User } from "./user";
 

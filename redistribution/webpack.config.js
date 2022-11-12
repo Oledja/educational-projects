@@ -3,11 +3,9 @@ const slsw = require("serverless-webpack");
 
 const entries = {};
 
-
-
-Object.keys(slsw.lib.entries).forEach(
-  (key) => (entries[key] = [slsw.lib.entries[key]])
-);
+Object.keys(slsw.lib.entries).forEach((key) => {
+  entries[key] = [slsw.lib.entries[key]];
+});
 
 module.exports = {
   mode: slsw.lib.webpack.isLocal ? "development" : "production",

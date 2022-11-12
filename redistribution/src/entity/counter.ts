@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { BaseEntity, Column, Entity } from "typeorm";
+import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";
+import { OneToOne } from "typeorm/decorator/relations/OneToOne";
 import { Store } from "./store";
 
 @Entity("counter")
