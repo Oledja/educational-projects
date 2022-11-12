@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "module": "CommonJS",
+        "sourceMap": true,
+        "target": "ES2016",
+        "lib": ["ESNext"],
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+    },
+    "exclude": ["node_modules"],
+    "experimentalDecorators": true
+}
