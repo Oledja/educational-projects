@@ -6,7 +6,11 @@ class SupplierController {
 
   public getAll = async (req: Request, res: Response) => {
     const response = await this.supplierService.getAll();
-    res.status(200).json(response);
+    if (response instanceof Error) {
+      res.status(400).json(response.message);
+    } else {
+      res.status(200).json(response);
+    }
   };
 
   public getById = async (req: Request, res: Response) => {
@@ -14,7 +18,11 @@ class SupplierController {
       params: { id },
     } = req;
     const response = await this.supplierService.getById(id);
-    res.status(200).json(response);
+    if (response instanceof Error) {
+      res.status(400).json(response.message);
+    } else {
+      res.status(200).json(response);
+    }
   };
 }
 

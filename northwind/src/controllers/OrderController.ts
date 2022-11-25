@@ -6,7 +6,11 @@ class OrderConrtoller {
 
   public getAll = async (req: Request, res: Response) => {
     const response = await this.orderService.getAll();
-    res.status(200).json(response);
+    if (response instanceof Error) {
+      res.status(400).json(response.message);
+    } else {
+      res.status(200).json(response);
+    }
   };
 
   public getById = async (req: Request, res: Response) => {
@@ -14,7 +18,11 @@ class OrderConrtoller {
       params: { id },
     } = req;
     const response = await this.orderService.getById(id);
-    res.status(200).json(response);
+    if (response instanceof Error) {
+      res.status(400).json(response.message);
+    } else {
+      res.status(200).json(response);
+    }
   };
 
   public getOrderProductsById = async (req: Request, res: Response) => {
@@ -22,7 +30,11 @@ class OrderConrtoller {
       params: { id },
     } = req;
     const response = await this.orderService.getOrderProductsById(id);
-    res.status(200).json(response);
+    if (response instanceof Error) {
+      res.status(400).json(response.message);
+    } else {
+      res.status(200).json(response);
+    }
   };
 }
 

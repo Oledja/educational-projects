@@ -6,7 +6,11 @@ class ProductController {
 
   public getAll = async (req: Request, res: Response) => {
     const response = await this.productService.getAll();
-    res.status(200).json(response);
+    if (response instanceof Error) {
+      res.status(400).json(response.message);
+    } else {
+      res.status(200).json(response);
+    }
   };
 
   public getById = async (req: Request, res: Response) => {
@@ -14,7 +18,11 @@ class ProductController {
       params: { id },
     } = req;
     const response = await this.productService.getById(id);
-    res.status(200).json(response);
+    if (response instanceof Error) {
+      res.status(400).json(response.message);
+    } else {
+      res.status(200).json(response);
+    }
   };
 
   public getByFilter = async (req: Request, res: Response) => {
@@ -22,7 +30,11 @@ class ProductController {
       params: { filter },
     } = req;
     const response = await this.productService.getByFilter(filter);
-    res.status(200).json(response);
+    if (response instanceof Error) {
+      res.status(400).json(response.message);
+    } else {
+      res.status(200).json(response);
+    }
   };
 }
 
