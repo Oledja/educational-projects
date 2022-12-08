@@ -1,0 +1,420 @@
+{
+  "version": "3",
+  "dialect": "pg",
+  "id": "27c1c098-fe8b-4bc1-b808-c645ad0b50ce",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "cities": {
+      "name": "cities",
+      "columns": {
+        "city_slug": {
+          "name": "city_slug",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city_name": {
+          "name": "city_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meta_title": {
+          "name": "meta_title",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meta_description": {
+          "name": "meta_description",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h1": {
+          "name": "h1",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h2": {
+          "name": "h2",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sub_heading_text": {
+          "name": "sub_heading_text",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tick_1": {
+          "name": "tick_1",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tick_2": {
+          "name": "tick_2",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tick_3": {
+          "name": "tick_3",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "about_bookphysio": {
+          "name": "about_bookphysio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {}
+    },
+    "clinics": {
+      "name": "clinics",
+      "columns": {
+        "long_name_version": {
+          "name": "long_name_version",
+          "type": "varchar(60)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "registration_link": {
+          "name": "registration_link",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pms": {
+          "name": "pms",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meta_title": {
+          "name": "meta_title",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meta_description": {
+          "name": "meta_description",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website": {
+          "name": "website",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clinic_name": {
+          "name": "clinic_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "display_on_web": {
+          "name": "display_on_web",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "link_to_clinic_suburb_page": {
+          "name": "link_to_clinic_suburb_page",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "full_address": {
+          "name": "full_address",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "suburb": {
+          "name": "suburb",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "postcode": {
+          "name": "postcode",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nearby1_txt": {
+          "name": "nearby1_txt",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby1_link": {
+          "name": "nearby1_link",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby2_txt": {
+          "name": "nearby2_txt",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby2_link": {
+          "name": "nearby2_link",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby3_txt": {
+          "name": "nearby3_txt",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby3_link": {
+          "name": "nearby3_link",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby4_txt": {
+          "name": "nearby4_txt",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby4_link": {
+          "name": "nearby4_link",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "about_clinic": {
+          "name": "about_clinic",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {}
+    },
+    "suburbs": {
+      "name": "suburbs",
+      "columns": {
+        "suburb_id": {
+          "name": "suburb_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": false
+        },
+        "suburb_slug": {
+          "name": "suburb_slug",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "suburb_name": {
+          "name": "suburb_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postcode": {
+          "name": "postcode",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meta_title": {
+          "name": "meta_title",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meta_description": {
+          "name": "meta_description",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h1": {
+          "name": "h1",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h2": {
+          "name": "h2",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "about_bookphysio": {
+          "name": "about_bookphysio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby1_link": {
+          "name": "nearby1_link",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby1_txt": {
+          "name": "nearby1_txt",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby1_state": {
+          "name": "nearby1_state",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby1_postcode": {
+          "name": "nearby1_postcode",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby2_link": {
+          "name": "nearby2_link",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby2_txt": {
+          "name": "nearby2_txt",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby2_state": {
+          "name": "nearby2_state",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby2_postcode": {
+          "name": "nearby2_postcode",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby3_link": {
+          "name": "nearby3_link",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby3_txt": {
+          "name": "nearby3_txt",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby3_state": {
+          "name": "nearby3_state",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby3_postcode": {
+          "name": "nearby3_postcode",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby4_link": {
+          "name": "nearby4_link",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby4_txt": {
+          "name": "nearby4_txt",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby4_state": {
+          "name": "nearby4_state",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby4_postcode": {
+          "name": "nearby4_postcode",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {}
+    }
+  },
+  "enums": {}
+}
