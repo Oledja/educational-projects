@@ -1,5 +1,5 @@
-const firstQuestion = "Enter some words separated through space: ";
-const secondQuestion = `How wold you like to sort values?
+const FIRST_QUESTION = "Enter some words separated through space: ";
+const SECOND_QUESTION = `How wold you like to sort values?
 1. Sort words alphabetically.
 2. Show digities from the smallest.
 3. Show digities from the bigest.
@@ -9,4 +9,4 @@ const secondQuestion = `How wold you like to sort values?
                             
 Select (1 - 6 or "exit" for EXIT) and press ENTER: `;
 
-module.exports = { firstQuestion, secondQuestion };
+export { FIRST_QUESTION, SECOND_QUESTION };
