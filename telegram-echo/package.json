@@ -1,13 +1,15 @@
 {
   "name": "telegram-echo",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {},
-  "keywords": [],
-  "author": "",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "start": "tsc && node build/app.js"
+  },
+  "author": "Prylipko Oleg",
   "license": "ISC",
   "dependencies": {
+    "@types/node-telegram-bot-api": "^0.57.6",
     "axios": "^0.27.2",
     "dotenv": "^16.0.2",
     "node-telegram-bot-api": "^0.58.0"
