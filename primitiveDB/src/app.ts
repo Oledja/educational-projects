@@ -1,5 +1,7 @@
-import inquirer from "inquirer";
-import { saveUser, getUser } from "./repository/userRepository.js";
+import inquirer, { Answers } from "inquirer";
+import UserRepository from "./repository/UserRepository.js";
+
+const userRepository = new UserRepository();
 
 function main() {
   inquirer
@@ -14,7 +16,7 @@ function main() {
         message: "Choose your gender: ",
         type: "list",
         choices: ["male", "female"],
-        when: (answers) => {
+        when: (answers: Answers) => {
           return answers.name;
         },
       },
@@ -22,11 +24,11 @@ function main() {
         name: "age",
         message: "Enter your age",
         type: "input",
-        validate: (value) => {
+        validate: (value: number) => {
           if (!isNaN(value)) return true;
           return `<${value}> can't be age. Pleace enter a valid age`;
         },
-        when: function (answers) {
+        when: function (answers: Answers) {
           return answers.name;
         },
       },
@@ -34,7 +36,7 @@ function main() {
         name: "search",
         message: "Would you to search user in DB?: ",
         type: "confirm",
-        when: (answers) => {
+        when: (answers: Answers) => {
           return !answers.name;
         },
       },
@@ -42,14 +44,14 @@ function main() {
         name: "username",
         message: "Enter username : ",
         type: "input",
-        when: (answers) => {
+        when: (answers: Answers) => {
           return answers.search;
         },
       },
     ])
     .then((answers) => {
       if (answers.name) {
-        saveUser({
+        userRepository.saveUser({
           name: answers.name,
           gender: answers.gender,
           age: parseInt(answers.age),
@@ -57,16 +59,13 @@ function main() {
         main();
       } else {
         if (answers.search) {
-          const users = getUser(answers.username);
-          if (!users.length) {
+          const user = userRepository.getUser(answers.username);
+          if (!user) {
             console.log(`User with name ${answers.username} diesn't exist`);
-          } else {
-            console.log(users);
-          }
+          } else console.log(user);
           main();
-        } else {
-          return;
         }
+        return;
       }
     });
 }

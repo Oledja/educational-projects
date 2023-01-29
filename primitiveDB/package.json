@@ -2,14 +2,14 @@
   "name": "primitivedb",
   "type": "module",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc && node build/app.js"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Prylipko Oleh",
   "license": "ISC",
   "dependencies": {
+    "@types/inquirer": "^9.0.3",
     "inquirer": "^9.0.0"
   }
 }
