@@ -9,14 +9,14 @@ const saveTokens = (filePath: string, tokens: Credentials) => {
   fs.writeFileSync(filePath, JSON.stringify(tokens));
 };
 
-const getTokens = (filePath: string): Credentials => {
+const getTokens = (filePath: string) => {
   const credentials: Credentials = JSON.parse(
     fs.readFileSync(filePath, "utf-8")
   );
   return credentials;
 };
 
-const getImageName = (imagePath: string): string => {
+const getImageName = (imagePath: string) => {
   const { name: imageName } = path.parse(imagePath);
   return imageName;
 };

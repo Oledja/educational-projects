@@ -4,7 +4,6 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const googleDriveClient = new GoogleDriveClient();
-
 class GoogleDriveService {
   public async saveImage(path: string, fileName: string) {
     const drive = await googleDriveClient.getDrive();
@@ -21,9 +20,7 @@ class GoogleDriveService {
         },
       });
     } catch (err) {
-      if (err instanceof Error) {
-        console.log(err.message);
-      }
+      console.log(err);
     }
   }
 

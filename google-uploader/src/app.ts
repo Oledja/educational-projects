@@ -12,11 +12,11 @@ const main = async () => {
     },
   ]);
 
-  let imageName: string = getImageName(imagePath.path);
+  let imageName = getImageName(imagePath.path);
   const isChangeName = await inquirer.prompt([
     {
       name: "changeName",
-      message: `current image name "${imageName}" \nDo you want change it?`,
+      message: `Current image name "${imageName}" \nDo you want change it?`,
       type: "list",
       choices: ["yes", "no"],
     },
