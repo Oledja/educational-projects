@@ -1,5 +1,5 @@
-import { timeStamp } from "console";
 import OpenweatherClient from "../clients/OpenweatherClient";
+import { getWeekDay, getMonth } from "../helper/helper";
 import IOpenweatherResponse from "../interfaces/IOpenweatherResponse";
 
 const openweather = new OpenweatherClient();
@@ -79,39 +79,6 @@ const prepareWeather = (weather: IOpenweatherResponse) => {
       : `${weather.main.feels_like.toFixed(1)}°C`;
   const sky = weather.weather[0].description;
   return `   ${time}, ${temp}, ощущается: ${feelsLike}, ${sky}\n`;
-};
-
-const getWeekDay = (date: string): string => {
-  const day = new Date(date).getDay();
-  const days = [
-    "воскресенье",
-    "понедельник",
-    "вторник",
-    "среда",
-    "четверг",
-    "пятница",
-    "суббота",
-  ];
-  return days[day];
-};
-
-const getMonth = (date: string) => {
-  const month = new Date(date).getMonth();
-  const days = [
-    "января",
-    "февраля",
-    "марта",
-    "апреля",
-    "мая",
-    "июня",
-    "июля",
-    "августа",
-    "сентября",
-    "октября",
-    "ноября",
-    "декабря",
-  ];
-  return days[month];
 };
 
 export default OpenweatherService;
