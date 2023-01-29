@@ -7,26 +7,22 @@ let weatherForecast: IOpenweatherResponse[];
 
 class OpenweatherService {
   public async getWeatherForecastThreeHours(): Promise<string> {
-    const weatherMap: Map<string, IOpenweatherResponse[]> =
-      await groupWeatherByDate();
+    const weatherMap = await groupWeatherByDate();
     return getWeatherForecast(weatherMap);
   }
 
   public async getWeatherForecastSixHours(): Promise<string> {
-    let weatherMap: Map<string, IOpenweatherResponse[]> =
-      await groupWeatherByDate();
+    let weatherMap = await groupWeatherByDate();
     weatherMap = getSixHoursInterval(weatherMap);
     return getWeatherForecast(weatherMap);
   }
 }
-const groupWeatherByDate = async (): Promise<
-  Map<string, IOpenweatherResponse[]>
-> => {
+const groupWeatherByDate = async () => {
   weatherForecast = await openweather.getCurrentWeatherForecast();
   const weatherMap: Map<string, IOpenweatherResponse[]> = new Map();
 
   weatherForecast.forEach((weather) => {
-    const date: string = weather.dt_txt.split(" ")[0];
+    const date = weather.dt_txt.split(" ")[0];
     if (weatherMap.has(date)) {
       weatherMap.get(date)!.push(weather);
     } else weatherMap.set(date, [weather]);
@@ -36,9 +32,9 @@ const groupWeatherByDate = async (): Promise<
 
 const getSixHoursInterval = (
   weatherMap: Map<string, IOpenweatherResponse[]>
-): Map<string, IOpenweatherResponse[]> => {
+) => {
   weatherMap.forEach((_v, key) => {
-    let weather: IOpenweatherResponse[] | undefined = weatherMap.get(key);
+    let weather = weatherMap.get(key);
     if (weather) {
       weather = weather.filter((w) => {
         let time: string = w.dt_txt.split(" ")[1];
@@ -58,8 +54,8 @@ const getSixHoursInterval = (
 
 const getWeatherForecast = async (
   weatherMap: Map<string, IOpenweatherResponse[]>
-): Promise<string> => {
-  let result: string = "Погода в Днепре:\n";
+) => {
+  let result = "Погода в Днепре:\n";
   weatherMap.forEach((_v, key) => {
     result += `\n ${getWeekDay(key)}, ${new Date(key).getDate()} ${getMonth(
       key
@@ -71,9 +67,9 @@ const getWeatherForecast = async (
   return result;
 };
 
-const prepareWeather = (weather: IOpenweatherResponse): string => {
-  const time: string = weather.dt_txt.split(" ")[1].substring(0, 5);
-  const temp: string =
+const prepareWeather = (weather: IOpenweatherResponse) => {
+  const time = weather.dt_txt.split(" ")[1].substring(0, 5);
+  const temp =
     weather.main.temp >= 0
       ? `+${weather.main.temp.toFixed(1)}°C`
       : `${weather.main.temp.toFixed(1)}°C`;
@@ -86,8 +82,8 @@ const prepareWeather = (weather: IOpenweatherResponse): string => {
 };
 
 const getWeekDay = (date: string): string => {
-  const day: number = new Date(date).getDay();
-  const days: string[] = [
+  const day = new Date(date).getDay();
+  const days = [
     "воскресенье",
     "понедельник",
     "вторник",
@@ -99,9 +95,9 @@ const getWeekDay = (date: string): string => {
   return days[day];
 };
 
-const getMonth = (date: string): string => {
-  const month: number = new Date(date).getMonth();
-  const days: string[] = [
+const getMonth = (date: string) => {
+  const month = new Date(date).getMonth();
+  const days = [
     "января",
     "февраля",
     "марта",

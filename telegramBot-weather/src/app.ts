@@ -48,12 +48,15 @@ const eurExchangeRate = async (chatId: number) => {
   await bot.sendMessage(chatId, await privatbankService.getExchangeRateEur());
 };
 bot.on("message", (msg) => {
-  const chatId: number = msg.chat.id;
-  if (msg.text === "погода") startMenu(chatId);
+  const {
+    chat: { id: chatId },
+  } = msg;
+  const { text: message } = msg;
+  if (message === "погода") startMenu(chatId);
 });
 
-bot.on("callback_query", async (query: TelegramBot.CallbackQuery) => {
-  const chatId: number = query.message?.chat.id!;
+bot.on("callback_query", async (query) => {
+  const chatId: number = query.message!.chat.id;
   switch (query.data) {
     case "3": {
       await bot.sendMessage(
