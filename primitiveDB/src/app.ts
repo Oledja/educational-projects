@@ -1,7 +1,11 @@
 import inquirer, { Answers } from "inquirer";
 import UserRepository from "./repository/UserRepository.js";
+import * as dotenv from "dotenv";
 
-const userRepository = new UserRepository();
+dotenv.config();
+
+const PATH_TO_FILE = process.env.FILE_PATH;
+const userRepository = new UserRepository(PATH_TO_FILE);
 
 function main() {
   inquirer

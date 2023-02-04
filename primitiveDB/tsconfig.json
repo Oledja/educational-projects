@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "target": "es2016",
-    "rootDir": "./src",
-    "outDir": "./build/",
+    "experimentalDecorators": true,
+    "rootDir": "src",
+    "sourceMap": true,
+    "outDir": "./build",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "strictPropertyInitialization": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "moduleResolution": "node"
   }
 }
