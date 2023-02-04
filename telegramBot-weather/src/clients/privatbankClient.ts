@@ -1,14 +1,21 @@
 import axios from "axios";
-import IPrivatebankResponse from "../interfaces/IPrivatbankResponse";
+import PrivatebankResponse from "../interfaces/PrivatbankResponse";
+import PrivatbankRawResponse from "../interfaces/PrivatbankRawResponse";
 import * as dotenv from "dotenv";
+import PrivatCurrencyCode from "../enums/PrivatCurrencyCode";
 dotenv.config();
 
 class PrivatbankClient {
-  async getCurrentExchangeRate(): Promise<IPrivatebankResponse[]> {
-    const { data: privatResult } = await axios.get(process.env.PRIVATBANK_URL);
-    return privatResult.filter(
-      (value: { ccy: string }) => value.ccy === "USD" || value.ccy === "EUR"
+  private PRIVATBANK_URL = process.env.PRIVATBANK_URL;
+  async getCurrentExchangeRate(): Promise<PrivatebankResponse[]> {
+    const { data: privatResponse } = await axios.get<PrivatbankRawResponse[]>(
+      this.PRIVATBANK_URL
     );
+    return privatResponse.filter((value) => {
+      const { ccy } = value;
+      if (ccy === PrivatCurrencyCode.USD || ccy === PrivatCurrencyCode.EUR)
+        return true;
+    });
   }
 }
 

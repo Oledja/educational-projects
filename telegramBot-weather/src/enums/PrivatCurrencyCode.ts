@@ -1,6 +1,6 @@
 enum PrivatCurrencyCode {
-  usd = "USD",
-  eur = "EUR",
+  USD = "USD",
+  EUR = "EUR",
 }
 
 export default PrivatCurrencyCode;

@@ -1,14 +1,17 @@
 import axios from "axios";
-import IOpenweatherResponse from "../interfaces/IOpenweatherResponse";
+import OpenweatherResponse from "../interfaces/OpenweatherResponse";
+import OpenweatherRawResponse from "../interfaces/OpenweatherRawResponse";
 import * as dotenv from "dotenv";
+
 dotenv.config();
 
 class OpenweatherClient {
-  async getCurrentWeatherForecast(): Promise<IOpenweatherResponse[]> {
+  private OPENWEATHER_URL = process.env.OPENWEATHER_URL;
+  async getCurrentWeatherForecast(): Promise<OpenweatherResponse[]> {
     const {
-      data: { list: weatherResult },
-    } = await axios.get(process.env.OPENWEATHER_URL);
-    return weatherResult;
+      data: { list: weatherResponse },
+    } = await axios.get<OpenweatherRawResponse>(this.OPENWEATHER_URL);
+    return weatherResponse;
   }
 }
 

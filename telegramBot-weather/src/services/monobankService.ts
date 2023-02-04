@@ -1,5 +1,5 @@
 import MonobankClient from "../clients/MonobankClient";
-import IMonobankResponse from "../interfaces/IMonobankResponse";
+import IMonobankResponse from "../interfaces/MonobankResponse";
 import MonoCurrencyCode from "../enums/MonoCurrencyCode";
 
 const monobank = new MonobankClient();
@@ -7,12 +7,12 @@ let currentCurrency: IMonobankResponse[];
 
 class MonobankService {
   public async getExchangeRateUsd(): Promise<string> {
-    const usd = await getCurrency(MonoCurrencyCode.usd);
+    const usd = await getCurrency(MonoCurrencyCode.USD);
     return `Monobank:💵 ${usd.rateBuy.toFixed(2)}/${usd.rateSell.toFixed(2)}`;
   }
 
   public async getExchangeRateEur(): Promise<string> {
-    const eur = await getCurrency(MonoCurrencyCode.eur);
+    const eur = await getCurrency(MonoCurrencyCode.EUR);
     return `Monobank:💶 ${eur.rateBuy.toFixed(2)}/${eur.rateSell.toFixed(2)}`;
   }
 }

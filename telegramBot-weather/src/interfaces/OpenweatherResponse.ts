@@ -1,4 +1,4 @@
-interface IOpenweatherResponse {
+interface OpenweatherResponse {
   main: {
     temp: number;
     feels_like: number;
@@ -11,4 +11,4 @@ interface IOpenweatherResponse {
   dt_txt: string;
 }
 
-export default IOpenweatherResponse;
+export default OpenweatherResponse;

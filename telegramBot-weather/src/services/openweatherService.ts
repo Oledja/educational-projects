@@ -1,6 +1,7 @@
 import OpenweatherClient from "../clients/OpenweatherClient";
 import { getWeekDay, getMonth } from "../helper/helper";
-import IOpenweatherResponse from "../interfaces/IOpenweatherResponse";
+import OpenweatherResponse from "../interfaces/OpenweatherResponse";
+import IOpenweatherResponse from "../interfaces/OpenweatherResponse";
 
 const openweather = new OpenweatherClient();
 let weatherForecast: IOpenweatherResponse[];
@@ -17,10 +18,12 @@ class OpenweatherService {
     return getWeatherForecast(weatherMap);
   }
 }
-const groupWeatherByDate = async () => {
-  weatherForecast = await openweather.getCurrentWeatherForecast();
-  const weatherMap: Map<string, IOpenweatherResponse[]> = new Map();
 
+const groupWeatherByDate = async (): Promise<
+  Map<string, OpenweatherResponse[]>
+> => {
+  weatherForecast = await openweather.getCurrentWeatherForecast();
+  const weatherMap: Map<string, OpenweatherResponse[]> = new Map();
   weatherForecast.forEach((weather) => {
     const date = weather.dt_txt.split(" ")[0];
     if (weatherMap.has(date)) {
@@ -32,7 +35,7 @@ const groupWeatherByDate = async () => {
 
 const getSixHoursInterval = (
   weatherMap: Map<string, IOpenweatherResponse[]>
-) => {
+): Map<string, IOpenweatherResponse[]> => {
   weatherMap.forEach((_v, key) => {
     let weather = weatherMap.get(key);
     if (weather) {
@@ -54,7 +57,7 @@ const getSixHoursInterval = (
 
 const getWeatherForecast = async (
   weatherMap: Map<string, IOpenweatherResponse[]>
-) => {
+): Promise<string> => {
   let result = "Погода в Днепре:\n";
   weatherMap.forEach((_v, key) => {
     result += `\n ${getWeekDay(key)}, ${new Date(key).getDate()} ${getMonth(
@@ -67,7 +70,7 @@ const getWeatherForecast = async (
   return result;
 };
 
-const prepareWeather = (weather: IOpenweatherResponse) => {
+const prepareWeather = (weather: IOpenweatherResponse): string => {
   const time = weather.dt_txt.split(" ")[1].substring(0, 5);
   const temp =
     weather.main.temp >= 0

@@ -3,10 +3,12 @@ import MonobankService from "./services/MonobankService";
 import PrivatbankService from "./services/PrivatbankService";
 import OpenweatherService from "./services/OpenweatherService";
 import * as dotenv from "dotenv";
+import Query from "./interfaces/Query";
 
 dotenv.config();
 
-const bot: TelegramBot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, {
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const bot: TelegramBot = new TelegramBot(TOKEN, {
   polling: true,
 });
 const openweatherService: OpenweatherService = new OpenweatherService();
@@ -52,11 +54,13 @@ bot.on("message", (msg) => {
     chat: { id: chatId },
   } = msg;
   const { text: message } = msg;
-  if (message === "погода") startMenu(chatId);
+  if (message?.trim().toUpperCase() === "ПОГОДА") startMenu(chatId);
 });
 
 bot.on("callback_query", async (query) => {
-  const chatId: number = query.message!.chat.id;
+  const {
+    chat: { id: chatId },
+  } = query.message as Query["message"];
   switch (query.data) {
     case "3": {
       await bot.sendMessage(

@@ -1,6 +1,6 @@
 enum MonoCurrencyCode {
-  usd = 840,
-  eur = 978,
+  USD = 840,
+  EUR = 978,
 }
 
 export default MonoCurrencyCode;
