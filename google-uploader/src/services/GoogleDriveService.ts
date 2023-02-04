@@ -3,10 +3,11 @@ import GoogleDriveClient from "../clients/GoogleDriveClient";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const googleDriveClient = new GoogleDriveClient();
 class GoogleDriveService {
+  private googleDriveClient = new GoogleDriveClient();
+
   public async saveImage(path: string, fileName: string) {
-    const drive = await googleDriveClient.getDrive();
+    const drive = await this.googleDriveClient.getDrive();
     try {
       return drive.files.create({
         requestBody: {
@@ -20,19 +21,22 @@ class GoogleDriveService {
         },
       });
     } catch (err) {
-      console.log(err);
+      throw new Error("Image was not saved");
     }
   }
 
   public async getImage(imageId: string) {
-    const drive = await googleDriveClient.getDrive();
-    const {
-      data: { webViewLink: link },
-    } = await drive.files.get({
-      fileId: imageId,
-      fields: "webViewLink",
-    });
-    if (link) return link;
+    const drive = await this.googleDriveClient.getDrive();
+    if (drive) {
+      const {
+        data: { webViewLink: link },
+      } = await drive.files.get({
+        fileId: imageId,
+        fields: "webViewLink",
+      });
+      if (link) return link;
+    } else {
+    }
     throw new Error("Image doesn't exist");
   }
 }

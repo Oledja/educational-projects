@@ -1,67 +1,81 @@
 import { OAuth2Client } from "google-auth-library";
 import { google } from "googleapis";
-import path from "path";
-import { saveTokens, getTokens } from "../utill/util";
+import { saveTokens, getTokens } from "../util/util";
 import * as readline from "readline";
 import * as dotenv from "dotenv";
+import { AuthConfig } from "../interfaces/AuthConfig";
 
 dotenv.config();
 
-const TOKENS_PATH = path.dirname(__dirname) + "\\tokens.txt";
-const SCOPES = [process.env.SCOPES];
-const oAuth2Client = new google.auth.OAuth2(
-  process.env.CLIENT_ID,
-  process.env.CLIENT_SECRET,
-  process.env.REDIRECT_URI
-);
+class GoogleDriveAuth {
+  private tokensPath: string;
+  private clientId: string;
+  private clientSecret: string;
+  private redirectUrl: string;
+  private scopes: string[];
 
-const refreshToken = () => {
-  oAuth2Client.on("tokens", (credentials) => {
-    try {
-      const savedCredentials = getTokens(TOKENS_PATH);
-      savedCredentials.access_token = credentials.access_token;
-      savedCredentials.expiry_date = credentials.expiry_date;
-      saveTokens(TOKENS_PATH, savedCredentials);
-    } catch (err) {}
-  });
-};
-const authenticate = (): OAuth2Client | undefined => {
-  try {
-    const tokens = getTokens(TOKENS_PATH);
-    oAuth2Client.setCredentials(tokens);
-    return oAuth2Client;
-  } catch (err) {
-    console.log("To continue you need to register");
+  constructor(config: AuthConfig) {
+    this.tokensPath = config.tokensPath;
+    this.clientId = config.clientId;
+    this.clientSecret = config.clientSecret;
+    this.redirectUrl = config.redirectUrl;
+    this.scopes = config.scopes;
   }
-};
 
-const authorization = async (): Promise<OAuth2Client> => {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+  private oAuth2Client: OAuth2Client;
 
-  const url = oAuth2Client.generateAuthUrl({
-    access_type: "offline",
-    scope: SCOPES,
-  });
-  return new Promise((resolve) => {
-    console.log(url);
-    rl.question("Provide Key generated on web page ", async (answer) => {
-      rl.close();
-      const { tokens } = await oAuth2Client.getToken(answer);
-      oAuth2Client.setCredentials(tokens);
-      saveTokens(TOKENS_PATH, tokens);
-      resolve(oAuth2Client);
+  init = () => {
+    this.oAuth2Client = new google.auth.OAuth2(
+      this.clientId,
+      this.clientSecret,
+      this.redirectUrl
+    );
+  };
+
+  refreshToken = () => {
+    this.oAuth2Client.on("tokens", (credentials) => {
+      try {
+        const savedCredentials = getTokens(this.tokensPath);
+        savedCredentials.access_token = credentials.access_token;
+        savedCredentials.expiry_date = credentials.expiry_date;
+        saveTokens(this.tokensPath, savedCredentials);
+      } catch (err) {}
     });
-  });
-};
+  };
 
-const getAuth = async () => {
-  refreshToken();
-  const auth = authenticate();
-  if (auth) return auth;
-  return await authorization();
-};
+  authenticate = (): OAuth2Client => {
+    try {
+      const tokens = getTokens(this.tokensPath);
+      this.oAuth2Client.setCredentials(tokens);
+      return this.oAuth2Client;
+    } catch (err) {
+      throw new Error(
+        "Authentication is failed. To continue you need to register"
+      );
+    }
+  };
 
-export default getAuth;
+  authorization = async (): Promise<OAuth2Client> => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    const url = this.oAuth2Client.generateAuthUrl({
+      access_type: "offline",
+      scope: this.scopes,
+    });
+    return new Promise((resolve) => {
+      console.log(url);
+      rl.question("Provide Key generated on web page ", async (answer) => {
+        rl.close();
+        const { tokens } = await this.oAuth2Client.getToken(answer);
+        this.oAuth2Client.setCredentials(tokens);
+        saveTokens(this.tokensPath, tokens);
+        resolve(this.oAuth2Client);
+      });
+    });
+  };
+}
+
+export default GoogleDriveAuth;

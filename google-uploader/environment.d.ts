@@ -4,9 +4,11 @@ declare global {
       CLIENT_ID: string;
       CLIENT_SECRET: string;
       REDIRECT_URI: string;
-      API_KEY: string;
       SCOPES: string;
       PARENTS: string;
+      SHORT_LINK_URL: string;
+      SHORT_LINK_API_KEY: string;
+      TOKENS_PATH: string;
     }
   }
 }
