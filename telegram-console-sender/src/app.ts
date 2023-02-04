@@ -4,8 +4,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+const TOKEN = process.env.TELEGRAM_TOKEN;
 const program = new Command().version("0.0.1");
-const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
+const bot = new TelegramBot(TOKEN, { polling: true });
 
 program
   .command("message")
@@ -14,7 +16,7 @@ program
   .alias("m")
   .action(async (msg: string) => {
     try {
-      await bot.sendMessage(process.env.TELEGRAM_CHAT_ID, msg);
+      await bot.sendMessage(CHAT_ID, msg);
       process.exit();
     } catch (err) {
       console.log(err);
@@ -27,7 +29,7 @@ program
   .argument("path")
   .alias("p")
   .action(async (path: string) => {
-    await bot.sendPhoto(process.env.TELEGRAM_CHAT_ID, path);
+    await bot.sendPhoto(CHAT_ID, path);
     process.exit();
   });
 
