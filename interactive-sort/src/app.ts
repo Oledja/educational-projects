@@ -20,7 +20,7 @@ const start = async () => {
     const result = await ask(FIRST_QUESTION);
     const words = result.split(" ");
     const choice = await ask(SECOND_QUESTION);
-    if (choice === "exit") {
+    if (choice.trim().toUpperCase() === "EXIT") {
       return;
     }
     console.log(sortAndFilter(words, choice));
