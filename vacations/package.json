@@ -1,11 +1,13 @@
 {
   "name": "vacations",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc && node build/app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "Prylipko Oleg",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  }
 }
