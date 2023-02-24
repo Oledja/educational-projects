@@ -20,4 +20,4 @@ const cryptocurrencies: Map<string, string> = new Map([
   ["CHZ", "Chiliz"],
 ]);
 
-export default cryptocurrencies;
+export { cryptocurrencies };

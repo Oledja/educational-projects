@@ -1,21 +1,21 @@
 import { Request, Response, NextFunction } from "express";
-import cryptocurrencies from "../utill/Cryptocurrencies";
-import markets from "../utill/Markets";
-import time from "../utill/Time";
+import RequestOptions from "../interfices/RequestOptions";
+import { cryptocurrencies } from "../utils/Cryptocurrencies";
+import getErrorMessage from "../utils/getErrorMessage";
+import markets from "../utils/Markets";
+import timePeriod from "../utils/Time";
 
-const cryptocurrencyMiddleware = (
-  req: Request,
+const cryptoMiddleware = (
+  req: Request<{}, {}, {}, RequestOptions>,
   res: Response,
   next: NextFunction
 ): void => {
   try {
-    const name = req.query.name as string;
-    const timePeriod = req.query.timePeriod as string;
-    const market = req.query.market as string;
-    if (!cryptocurrencies.get(name))
+    const { symbol, market, time } = req.query;
+    if (!cryptocurrencies.get(symbol))
       throw new Error(
         JSON.stringify({
-          error: `Invalid parameter name=${name}`,
+          error: `Invalid parameter name=${symbol}`,
           message: `Available values ${cryptocurrencies.toString()}`,
         })
       );
@@ -28,19 +28,19 @@ const cryptocurrencyMiddleware = (
           })
         );
     }
-    if (!time.includes(timePeriod))
-      throw new Error(
-        JSON.stringify({
-          error: `Invalid parameter timePeriod=${timePeriod}`,
-          message: `Available values ${time.toString()}`,
-        })
-      );
+    if (time) {
+      if (!timePeriod.includes(time))
+        throw new Error(
+          JSON.stringify({
+            error: `Invalid parameter time=${time}`,
+            message: `Available values ${time.toString()}`,
+          })
+        );
+    }
     next();
   } catch (err) {
-    if (err instanceof Error) {
-      res.status(400).json({ error: err.message });
-    }
+    res.status(500).json(getErrorMessage(err));
   }
 };
 
-export default cryptocurrencyMiddleware;
+export default cryptoMiddleware;

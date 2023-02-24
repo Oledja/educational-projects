@@ -4,8 +4,8 @@ type KuCoin = {
   };
 };
 
-interface IKuCoinResponse {
+interface KuCoinRawResponse {
   data: KuCoin;
 }
 
-export { IKuCoinResponse, KuCoin };
+export { KuCoinRawResponse, KuCoin };

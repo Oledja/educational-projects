@@ -1,6 +1,7 @@
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
+      APP_PORT: string;
       COINBASE_URL: string;
       COINSTATS_URL: string;
       COIN_MARKET_CAP_API_KEY: string;

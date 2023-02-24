@@ -1,37 +1,23 @@
 import axios from "axios";
-import Markets from "../enums/Markets";
+import CoinBaseRawResponse from "../interfices/CoinBaseRawResponse";
+import getErrorMessage from "../utils/getErrorMessage";
 import * as dotenv from "dotenv";
-import CryptocurrencyClient from "../@types/CryptocurrencyClient";
-import ICryptocurrency from "../@types/ICryptocurrency";
-import { ICoinBaseResponse } from "../@types/CoinBase";
-import cryptocurrencies from "../utill/Cryptocurrencies";
 
 dotenv.config();
 
-class CoinBaseClient implements CryptocurrencyClient {
+class CoinBaseClient {
   private API_URL = process.env.COINBASE_URL;
 
-  public async getCryptocurrencyRate() {
-    const {
-      data: {
-        data: { rates: response },
-      },
-    }: ICoinBaseResponse = await axios.get(this.API_URL);
-    const currencies: ICryptocurrency[] = [];
-    Object.keys(response).forEach((symbol) => {
-      const name = cryptocurrencies.get(symbol);
-      if (name) {
-        currencies.push({
-          symbol,
-          price: 1 / +response[symbol],
-          market: Markets.COIN_BASE,
-          createdAt: new Date(),
-          name,
-        });
-      }
-    });
-    return currencies;
-  }
+  getCoinBaseRates = async (): Promise<CoinBaseRawResponse> => {
+    try {
+      const { data: response } = await axios.get<CoinBaseRawResponse>(
+        this.API_URL
+      );
+      return response;
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
+  };
 }
 
 export default CoinBaseClient;

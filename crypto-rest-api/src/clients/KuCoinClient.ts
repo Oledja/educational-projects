@@ -1,32 +1,21 @@
 import axios from "axios";
-import Markets from "../enums/Markets";
-import { IKuCoinResponse } from "../@types/KuCoin";
-import ICryptocurrency from "../@types/ICryptocurrency";
-import CryptocurrencyClient from "../@types/CryptocurrencyClient";
-import cryptocurrencies from "../utill/Cryptocurrencies";
+import getErrorMessage from "../utils/getErrorMessage";
+import * as dotenv from "dotenv";
+import { KuCoin, KuCoinRawResponse } from "../interfices/KuCoinRawREsponse";
 
-class KuCoinClient implements CryptocurrencyClient {
+dotenv.config();
+
+class KuCoinClient {
   private API_URL = process.env.KUCOIN_URL;
 
-  public async getCryptocurrencyRate() {
-    const {
-      data: { data: result },
-    }: IKuCoinResponse = await axios.get(this.API_URL);
-    const response: ICryptocurrency[] = [];
-    Object.keys(result).forEach((symbol) => {
-      const name = cryptocurrencies.get(symbol);
-      if (name) {
-        response.push({
-          name,
-          price: +result[symbol],
-          market: Markets.KU_COIN,
-          createdAt: new Date(),
-          symbol,
-        });
-      }
-    });
-    return response;
-  }
+  getKuCoinRates = async (): Promise<KuCoinRawResponse> => {
+    try {
+      const { data: response } = await axios.get<KuCoin>(this.API_URL);
+      return { data: response };
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
+  };
 }
 
 export default KuCoinClient;

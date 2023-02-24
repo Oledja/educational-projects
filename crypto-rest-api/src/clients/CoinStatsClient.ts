@@ -1,32 +1,23 @@
 import axios from "axios";
-import Markets from "../enums/Markets";
-import { ICoinStatsResponse } from "../@types/CoinStats";
-import CryptocurrencyClient from "../@types/CryptocurrencyClient";
-import ICryptocurrency from "../@types/ICryptocurrency";
-import cryptocurrencies from "../utill/Cryptocurrencies";
+import getErrorMessage from "../utils/getErrorMessage";
+import CoinStatsRawResponse from "../interfices/CoinStatsRawResponse";
+import * as dotenv from "dotenv";
 
-class CoinStatsClient implements CryptocurrencyClient {
+dotenv.config();
+
+class CoinStatsClient {
   private API_URL = process.env.COINSTATS_URL;
 
-  public async getCryptocurrencyRate() {
-    const {
-      data: { coins: result },
-    }: ICoinStatsResponse = await axios.get(this.API_URL);
-    const response: ICryptocurrency[] = [];
-    result.forEach((symbol) => {
-      const name = cryptocurrencies.get(symbol.symbol);
-      if (name) {
-        response.push({
-          name,
-          price: symbol.price,
-          market: Markets.COIN_STATS,
-          createdAt: new Date(),
-          symbol: symbol.symbol,
-        });
-      }
-    });
-    return response;
-  }
+  getCoinStatsRates = async (): Promise<CoinStatsRawResponse> => {
+    try {
+      const { data: response } = await axios.get<CoinStatsRawResponse>(
+        this.API_URL
+      );
+      return response;
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
+  };
 }
 
 export default CoinStatsClient;
