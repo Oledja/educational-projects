@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 const bodyValidator = (req: Request, res: Response, next: NextFunction) => {
   try {
     let { body: data } = req;
-    
+
     if (typeof data === "string") {
       try {
         data = JSON.parse(data);

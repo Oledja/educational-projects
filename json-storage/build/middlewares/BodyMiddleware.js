@@ -23,4 +23,3 @@ const bodyValidator = (req, res, next) => {
     }
 };
 exports.bodyValidator = bodyValidator;
-//# sourceMappingURL=BodyMiddleware.js.map

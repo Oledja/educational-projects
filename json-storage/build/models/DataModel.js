@@ -35,4 +35,3 @@ const DataModel = new mongoose_1.Schema({
     },
 });
 exports.default = mongoose_1.default.model("jsons", DataModel);
-//# sourceMappingURL=DataModel.js.map

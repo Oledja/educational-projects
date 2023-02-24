@@ -12,36 +12,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const DataModel_1 = __importDefault(require("../models/DataModel"));
+const DataService_1 = __importDefault(require("../services/DataService"));
+const getErrorMessage_1 = __importDefault(require("../utils/getErrorMessage"));
 class DataController {
-    saveData(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
+    constructor() {
+        this.dataService = new DataService_1.default();
+        this.saveData = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { body: data, url: route } = req;
-                const routeExist = yield DataModel_1.default.findOne({
-                    route,
-                });
-                if (routeExist) {
-                    throw new Error(`Sorry, route: ${routeExist.route} already exists`);
-                }
-                yield new DataModel_1.default({ route, data }).save();
+                yield this.dataService.saveData(route, data);
                 res.status(200).json("Data saved successfully");
             }
             catch (err) {
-                if (err instanceof Error)
-                    res.status(400).json(err.message);
+                res.status(500).json((0, getErrorMessage_1.default)(err));
             }
         });
-    }
-    getData(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
+        this.getData = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { url: route } = req;
-                const result = yield DataModel_1.default.findOne({ route });
-                if (!result) {
-                    throw new Error(`No data for route: ${route}`);
+                const response = yield this.dataService.getData(route);
+                if (response) {
+                    response;
+                    res.status(200).json(JSON.parse(response.data));
                 }
-                res.status(200).json(JSON.parse(result.data));
+                else
+                    throw new Error(`Тo saved data for the route: ${route}`);
             }
             catch (err) {
                 if (err instanceof Error)
@@ -50,5 +45,4 @@ class DataController {
         });
     }
 }
-exports.default = new DataController();
-//# sourceMappingURL=DataController.js.map
+exports.default = DataController;

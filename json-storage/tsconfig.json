@@ -1,17 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "experimentalDecorators": true,
+    "target": "es6",
     "module": "commonjs",
-    "rootDir": "src",
-    "sourceMap": true,
-    "outDir": "./build",
+    "rootDir": "./src",
+    "outDir": "./build/",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "strictPropertyInitialization": false,
     "skipLibCheck": true
-  },
-  "exclude": [
-    "node_modules"
-  ]
+  }
 }

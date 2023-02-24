@@ -1,4 +1,4 @@
-import IDataModel from "../interfaces/IDataModel";
+import IDataModel from "../interfaces/DataModelResponse";
 import mongoose, { Schema } from "mongoose";
 
 const DataModel = new Schema({
