@@ -1,13 +1,11 @@
 {
   "name": "short-linker",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc && node build/app.js"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Prylipko Oleh",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.27.2",

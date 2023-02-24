@@ -1,24 +1,37 @@
 import ShortLinkerRepository from "../repositories/ShortLinkerRepository";
-import ShortLinkerResponse from "../types/ShortLinkerResponse";
-import { generateShortLink } from "../utill/utill";
+import ShortLinkerResponse from "../interfaces/ShortLinkerResponse";
+import getErrorMessage from "../utils/getErrorMessage";
+import { generateShortLink } from "../utils/utill";
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
+const baseUrl = process.env.BASE_URL;
 
 class ShortLinkerService {
   shortLinkerRepository = new ShortLinkerRepository();
-  baseUrl: string = "localhost:5000";
 
   public async getUrlByShortLink(
     shortLink: string
-  ): Promise<ShortLinkerResponse | undefined> {
-    const result = await this.shortLinkerRepository.getUrlByShortLink(
-      shortLink
-    );
-    return result[0];
+  ): Promise<ShortLinkerResponse> {
+    try {
+      const result = await this.shortLinkerRepository.getUrlByShortLink(
+        shortLink
+      );
+      return result;
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
   }
 
   public async createShortLink(url: string): Promise<string> {
-    const shortLink = generateShortLink();
-    this.shortLinkerRepository.save(shortLink, url);
-    return this.baseUrl + shortLink;
+    try {
+      const shortLink = generateShortLink();
+      this.shortLinkerRepository.save(shortLink, url);
+      return baseUrl + shortLink;
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
   }
 }
 
