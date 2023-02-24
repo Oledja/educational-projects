@@ -1,5 +1,6 @@
-import ICryptocurrency from "../@Types/ICryptocurrency";
-import IFullCurrencyInfo from "../@Types/IFullCurrencyInfo";
+import ICryptocurrency from "../interfaces/ICryptocurrency";
+import IFullCurrencyInfo from "../interfaces/IFullCurrencyInfo";
+import getErrorMessage from "./getErrorMessage";
 
 const prepareListRecent = (currencies: ICryptocurrency[]): string => {
   let response = "";
@@ -23,16 +24,24 @@ Average prices for:
   24 h: ${fullInfo.prices.day}$
   `;
 
-const getAvgPriceByTime = (currencies: ICryptocurrency[], time: number) => {
-  const filteredCurrencies = currencies.filter(
-    (currency) =>
-      new Date(currency.createdAt).getTime() > new Date().getTime() - time
-  );
-  const avg =
-    filteredCurrencies
-      .map((currency) => currency.price!)
-      .reduce((price1, price2) => price1 + price2) / filteredCurrencies.length;
-  return +avg.toFixed(2);
+const getAvgPriceByTime = (
+  currencies: ICryptocurrency[],
+  time: number
+): number => {
+  try {
+    const filteredCurrencies = currencies.filter(
+      (currency) =>
+        new Date(currency.createdAt).getTime() > new Date().getTime() - time
+    );
+    const avg =
+      filteredCurrencies
+        .map((currency) => currency.price!)
+        .reduce((price1, price2) => price1 + price2) /
+      filteredCurrencies.length;
+    return +avg.toFixed(2);
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
 };
 
 export { prepareListRecent, prepareFullInfo, getAvgPriceByTime };

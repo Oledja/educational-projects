@@ -1,5 +1,5 @@
 import sqlite3 from "sqlite3";
-import ICriproRepoResponse from "../@Types/ICryptoRepoResponse";
+import ICriproRepoResponse from "../interfaces/ICryptoRepoResponse";
 import { INSERT, SELECT_ALL, SELECT_ONE, DELETE } from "../utill/Queries";
 
 sqlite3.verbose();
