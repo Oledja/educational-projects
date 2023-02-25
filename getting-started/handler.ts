@@ -9,7 +9,7 @@ import { errorHandler } from "./errorHandler";
 import * as Joi from "joi";
 
 const schema: Joi.StringSchema = Joi.string()
-  .min(4)
+  .min(1)
   .pattern(/^([^0-9]*)$/);
 
 function buildResponse(statusCode: number, body: string) {

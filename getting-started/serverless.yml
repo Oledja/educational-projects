@@ -1,4 +1,4 @@
-service: serverless
+service: getting-started
 
 plugins:
   - serverless-webpack
