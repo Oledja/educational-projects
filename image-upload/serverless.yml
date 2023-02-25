@@ -4,15 +4,12 @@ plugins:
 
 useDotenv: true
 
-# plugins: 
-#   - serverless-webpack
 provider:
   name: aws
   runtime: nodejs16.x
-  # region: us-east-1
   region: ${env:AWS_REGION}
 
-custom: 
+custom:
   dotenv:
     include:
       - AWS_S3_BUCKET_NAME
@@ -21,7 +18,6 @@ custom:
 
 resources:
   Resources:
-# S3 Bucket  
     ImagesBucket:
       Type: AWS::S3::Bucket
       Properties:
@@ -34,23 +30,23 @@ resources:
           Version: "2012-10-17"
           Statement:
             - Effect: Allow
-              Action:  
+              Action:
                 - "s3:PutObject"
                 - "s3:GetObject"
-              Resource: 
-                - { "Fn::GetAtt": ["ImagesBucket", "Arn"] } 
+              Resource:
+                - { "Fn::GetAtt": ["ImagesBucket", "Arn"] }
                 - Fn::Join:
-                  - ""
-                  - - { "Fn::GetAtt": ["ImagesBucket", "Arn"] }
-                    - "/*" 
-              Principal: "*" 
-# Cognito              
+                    - ""
+                    - - { "Fn::GetAtt": ["ImagesBucket", "Arn"] }
+                      - "/*"
+              Principal: "*"
+
     CognitoUserPool:
       Type: AWS::Cognito::UserPool
       Properties:
         UserPoolName: "user-pool"
         UsernameConfiguration:
-          CaseSensitive: false      
+          CaseSensitive: false
         Schema:
           - Name: email
             Required: true
@@ -60,7 +56,7 @@ resources:
               Priority: "1"
             - Name: verified_phone_number
               Priority: "2"
-        AutoVerifiedAttributes: 
+        AutoVerifiedAttributes:
           - email
         Policies:
           PasswordPolicy:
@@ -74,19 +70,31 @@ resources:
       Type: AWS::Cognito::UserPoolClient
       Properties:
         ClientName: user-pool-ui
+        AllowedOAuthFlowsUserPoolClient: true
+        AllowedOAuthFlows:
+          - code
+          - implicit
+        AllowedOAuthScopes:
+          - phone
+          - email
+          - openid
+          - aws.cognito.signin.user.admin
+          - profile
+        CallbackURLs:
+          - https://example.com/callback
+          - https://example.com/signout
         ExplicitAuthFlows:
           - USER_PASSWORD_AUTH
-        SupportedIdentityProviders: 
-          - COGNITO  
+        SupportedIdentityProviders:
+          - COGNITO
         GenerateSecret: true
         UserPoolId: !Ref CognitoUserPool
     CognitoUserPoolDomain:
-        Type: AWS::Cognito::UserPoolDomain
-        Properties:
-          UserPoolId: !Ref CognitoUserPool
-          Domain: "image-upload-user-pool-domain"     
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        UserPoolId: !Ref CognitoUserPool
+        Domain: "image-upload-user-pool-domain"
 
-# dynamoDB
     ImagesTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -107,11 +115,11 @@ resources:
             KeySchema:
               - AttributeName: username
                 KeyType: HASH
-            Projection: 
+            Projection:
               NonKeyAttributes:
-              - url
-              - fileId
-              ProjectionType: INCLUDE 
+                - url
+                - fileId
+              ProjectionType: INCLUDE
             ProvisionedThroughput:
               ReadCapacityUnits: 1
-              WriteCapacityUnits: 1      
+              WriteCapacityUnits: 1

@@ -4,20 +4,27 @@ import { JwkResponse } from "../@types/api-gateway";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
+import CustomRequest from "../interfaces/express/CustomRequest";
+import getErrorMessage from "../utils/getErrorMessage";
 
 dotenv.config();
 
+const pool = process.env.AWS_COGNITO_POOL_ID;
 const pems: { [key: string]: string } = {};
 
 const setUp = async () => {
-  const jwksUrl = `https://cognito-idp.us-east-1.amazonaws.com/${process.env.AWS_COGNITO_POOL_ID}/.well-known/jwks.json`;
-  const {
-    data: { keys },
-  } = await axios.get<JwkResponse>(jwksUrl);
-  keys.forEach((jwk) => {
-    const pem = jwkToPem({ kty: jwk.kty, n: jwk.n, e: jwk.e });
-    pems[jwk.kid] = pem;
-  });
+  try {
+    const jwksUrl = `https://cognito-idp.us-east-1.amazonaws.com/${pool}/.well-known/jwks.json`;
+    const {
+      data: { keys },
+    } = await axios.get<JwkResponse>(jwksUrl);
+    keys.forEach((jwk) => {
+      const pem = jwkToPem({ kty: jwk.kty, n: jwk.n, e: jwk.e });
+      pems[jwk.kid] = pem;
+    });
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
 };
 
 const authMiddleware = async (
@@ -26,7 +33,7 @@ const authMiddleware = async (
   next: NextFunction
 ): Promise<void> => {
   await setUp();
-  const token = req.header("Auth");
+  const token = req.header("Authorization")?.replace("Bearer ", "");
   if (token) {
     const decodedJwt = jwt.decode(token, { complete: true });
     if (decodedJwt) {
@@ -36,7 +43,7 @@ const authMiddleware = async (
         jwt.verify(token, pem, (err, payload) => {
           if (typeof payload === "object") {
             const username = payload.username as string;
-            res.locals.username = username;
+            (req as CustomRequest).username = username;
             next();
           } else res.status(401).end();
         });

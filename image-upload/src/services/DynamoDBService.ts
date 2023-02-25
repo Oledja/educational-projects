@@ -1,33 +1,40 @@
 import AWS from "aws-sdk";
+import * as dotenv from "dotenv";
+import getErrorMessage from "../utils/getErrorMessage";
 
+dotenv.config();
+
+const tableName = process.env.AWS_DYNAMO_DB_TABLE_NAME;
+const region = process.env.AWS_REGION;
 class DynamoDBService {
-  private config = {
-    region: process.env.AWS_REGION,
-  };
-
   private dynamoDB: AWS.DynamoDB.DocumentClient;
 
-  private tableName = process.env.AWS_DYNAMO_DB_TABLE_NAME;
-
   constructor() {
-    this.dynamoDB = new AWS.DynamoDB.DocumentClient(this.config);
+    this.dynamoDB = new AWS.DynamoDB.DocumentClient({ region });
   }
 
-  getFile = async (fileId: string) =>
-    this.dynamoDB
-      .get({
-        TableName: this.tableName,
-        Key: {
-          fileId,
-        },
-      })
-      .promise();
+  getFile = async (fileId: string) => {
+    try {
+      const { Item: result } = await this.dynamoDB
+        .get({
+          TableName: tableName,
+          Key: {
+            fileId,
+          },
+        })
+        .promise();
+      if (!result) throw new Error(`File with id: <${fileId} not found>`);
+      return result;
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
+  };
 
   saveFile = async (fileId: string, username: string, url: string) => {
     try {
-      await this.dynamoDB
+      const result = await this.dynamoDB
         .put({
-          TableName: this.tableName,
+          TableName: tableName,
           Item: {
             fileId,
             username,
@@ -35,10 +42,9 @@ class DynamoDBService {
           },
         })
         .promise();
+      return result;
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(err.message);
-      }
+      throw new Error(getErrorMessage(err));
     }
   };
 
@@ -46,30 +52,36 @@ class DynamoDBService {
     try {
       await this.dynamoDB
         .delete({
-          TableName: this.tableName,
+          TableName: tableName,
           Key: {
             fileId,
           },
         })
         .promise();
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(err.message);
-      }
+      throw new Error(getErrorMessage(err));
     }
   };
 
-  getAllFiles = async (username: string) =>
-    this.dynamoDB
-      .query({
-        TableName: this.tableName,
-        IndexName: "username-index",
-        KeyConditionExpression: "username = :username",
-        ExpressionAttributeValues: {
-          ":username": username,
-        },
-      })
-      .promise();
+  getAllFiles = async (username: string) => {
+    try {
+      const { Items: result } = await this.dynamoDB
+        .query({
+          TableName: tableName,
+          IndexName: "username-index",
+          KeyConditionExpression: "username = :username",
+          ExpressionAttributeValues: {
+            ":username": username,
+          },
+        })
+        .promise();
+      if (!result)
+        throw new Error(`No saved files for user with username: <${username}>`);
+      return result;
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
+  };
 }
 
 export default DynamoDBService;

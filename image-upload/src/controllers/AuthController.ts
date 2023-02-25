@@ -1,51 +1,46 @@
+import { AttributeType } from "aws-sdk/clients/cognitoidentityserviceprovider";
 import { Request, Response } from "express";
+import SignInRequest from "../interfaces/cognito/SignInRequest";
+import CognitoSignUpRequest from "../interfaces/cognito/SignUpRequest";
+import VerifyRequest from "../interfaces/cognito/VerifyRequest";
 import CognitoService from "../services/CognitoService";
+import getErrorMessage from "../utils/getErrorMessage";
 
-const signUp = async (request: Request, response: Response) => {
-  const { username, password, email } = request.body;
-  const userAttr = [];
-  userAttr.push({ Name: "email", Value: email });
+class AuthController {
+  private cognitoService = new CognitoService();
 
-  const cognito = new CognitoService();
-  try {
-    await cognito.signUp(username, password, userAttr);
-    response.status(200).json("Registration completed successfully");
-  } catch (err) {
-    if (err instanceof Error) {
-      response.status(400).json(err.message);
+  signUp = async (req: Request, res: Response) => {
+    const { username, password, email } = req.body as CognitoSignUpRequest;
+    const userAttr: AttributeType[] = [{ Name: "email", Value: email }];
+    try {
+      await this.cognitoService.signUp(username, password, userAttr);
+      res.status(200).json("Registration completed successfully");
+    } catch (err) {
+      if (err instanceof Error) {
+        res.status(500).json(err.message);
+      }
     }
-  }
-};
+  };
 
-const signIn = async (request: Request, response: Response) => {
-  const { username, password } = request.body;
-  const cognito = new CognitoService();
-  try {
-    const token = await cognito.signIn(username, password);
-    if (token) {
-      response.status(200).send({
-        message: "Authorization completed successfully",
-        AccessToken: token,
-      });
-    } else response.status(400).json("Authorization failed");
-  } catch (err) {
-    if (err instanceof Error) {
-      response.status(400).json(err.message);
+  signIn = async (req: Request, res: Response) => {
+    const { username, password } = req.body as SignInRequest;
+    try {
+      const response = await this.cognitoService.signIn(username, password);
+      res.status(200).json(response);
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
-  }
-};
+  };
 
-const verify = async (request: Request, response: Response) => {
-  const { username, code } = request.body;
-  const cognito = new CognitoService();
-  try {
-    await cognito.verifyAccount(username, code);
-    response.status(200).json("Verification completed successfully");
-  } catch (err) {
-    if (err instanceof Error) {
-      response.status(400).json(err.message);
+  verify = async (req: Request, res: Response) => {
+    const { username, code } = req.body as VerifyRequest;
+    try {
+      await this.cognitoService.verifyAccount(username, code);
+      res.status(200).json("Verification completed successfully");
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
-  }
-};
+  };
+}
 
-export { signIn, signUp, verify };
+export default AuthController;

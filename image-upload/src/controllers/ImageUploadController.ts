@@ -1,44 +1,49 @@
 import { Request, Response } from "express";
+import CustomRequest from "../interfaces/express/CustomRequest";
 import ImageUploadService from "../services/ImageUploadService";
+import getErrorMessage from "../utils/getErrorMessage";
 
-const uploadImage = async (request: Request, response: Response) => {
-  const { file } = request;
-  const type = file?.originalname.split(".")[1];
-  const { username } = response.locals;
-  const imageUploadService = new ImageUploadService();
-  try {
-    if (file && type && typeof username === "string") {
-      await imageUploadService.saveImage(username, file, type);
-      response.status(200).json("Image saved successfully");
+class ImageUploadController {
+  private imageUploadService = new ImageUploadService();
+
+  uploadImage = async (req: Request, res: Response) => {
+    const { file } = req;
+    const { username } = req as CustomRequest;
+    try {
+      if (file) {
+        await this.imageUploadService.saveImage(username, file);
+        res.status(200).json("Image saved successfully");
+      }
+      throw new Error("The image is not provided");
+    } catch (err) {
+      if (err instanceof Error) {
+        res.status(400).json(err.message);
+      }
     }
-  } catch (err) {
-    if (err instanceof Error) {
-      response.status(400).json(err.message);
+  };
+
+  getImages = async (req: Request, res: Response) => {
+    const { username } = req as CustomRequest;
+    try {
+      const response = await this.imageUploadService.getImages(username);
+      res.status(200).json({
+        images: response,
+      });
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
-  }
-};
+  };
 
-const getImages = async (request: Request, response: Response) => {
-  const username = response.locals.username as string;
-  const imageUploadService = new ImageUploadService();
-  const result = await imageUploadService.getImages(username);
-  response.status(200).json({
-    images: result,
-  });
-};
-
-const deleteImage = async (request: Request, response: Response) => {
-  const { fileId } = request.params;
-  const username = response.locals.username as string;
-  const imageUploadService = new ImageUploadService();
-  try {
-    await imageUploadService.deleteImage(username, fileId);
-    response.status(200).json("Image deleted successfully");
-  } catch (err) {
-    if (err instanceof Error) {
-      response.status(400).json(err.message);
+  deleteImage = async (req: Request, res: Response) => {
+    const { fileId } = req.params;
+    const { username } = req as CustomRequest;
+    try {
+      await this.imageUploadService.deleteImage(username, fileId);
+      res.status(200).json("Image deleted successfully");
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
-  }
-};
+  };
+}
 
-export { uploadImage, getImages, deleteImage };
+export default ImageUploadController;

@@ -1,89 +1,83 @@
 import AWS from "aws-sdk";
-import crypto from "crypto";
+import {
+  AttributeListType,
+  AuthenticationResultType,
+  SignUpRequest,
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
 import * as dotenv from "dotenv";
+import getErrorMessage from "../utils/getErrorMessage";
+import { generateSecretHash } from "../utils/generateSecretHash";
 
 dotenv.config();
 
+const region = process.env.AWS_REGION;
+const clientId = process.env.AWS_COGNITO_CLIENT_ID;
+
 class CognitoService {
-  private config = {
-    region: process.env.AWS_REGION,
-  };
-
-  private secretHash = process.env.AWS_COGNITO_SECRET_HASH;
-
-  private clientId = process.env.AWS_COGNITO_CLIENT_ID;
-
-  private cognitoIdentity: AWS.CognitoIdentityServiceProvider;
+  private cognitoIdentity;
 
   constructor() {
-    this.cognitoIdentity = new AWS.CognitoIdentityServiceProvider(this.config);
+    this.cognitoIdentity = new AWS.CognitoIdentityServiceProvider({ region });
   }
 
-  async signUp(username: string, password: string, userAttr: Array<any>) {
-    const params = {
-      ClientId: this.clientId,
+  signUp = async (
+    username: string,
+    password: string,
+    userAttr: AttributeListType
+  ) => {
+    const secret = generateSecretHash(username);
+    const params: SignUpRequest = {
+      ClientId: clientId,
       Password: password,
       Username: username,
-      SecretHash: this.generateHash(username),
+      SecretHash: secret,
       UserAttributes: userAttr,
     };
-
     try {
       await this.cognitoIdentity.signUp(params).promise();
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(err.message);
-      }
+      throw new Error(getErrorMessage(err));
     }
-  }
+  };
 
-  async signIn(
+  signIn = async (
     username: string,
     password: string
-  ): Promise<string | undefined> {
-    let result: string | undefined;
+  ): Promise<AuthenticationResultType> => {
+    const secret = generateSecretHash(username);
     const params = {
       AuthFlow: "USER_PASSWORD_AUTH",
-      ClientId: this.clientId,
+      ClientId: clientId,
       AuthParameters: {
         USERNAME: username,
         PASSWORD: password,
-        SECRET_HASH: this.generateHash(username),
+        SECRET_HASH: secret,
       },
     };
     try {
-      const data = await this.cognitoIdentity.initiateAuth(params).promise();
-      result = data.AuthenticationResult?.AccessToken;
+      const { AuthenticationResult: result } = await this.cognitoIdentity
+        .initiateAuth(params)
+        .promise();
+      if (!result) throw new Error("Authentication filed");
+      return result;
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(err.message);
-      }
+      throw new Error(getErrorMessage(err));
     }
-    return result;
-  }
+  };
 
   async verifyAccount(username: string, code: string) {
+    const secret = generateSecretHash(username);
     const params = {
-      ClientId: this.clientId,
+      ClientId: clientId,
       ConfirmationCode: code,
-      SecretHash: this.generateHash(username),
+      SecretHash: secret,
       Username: username,
     };
-
     try {
       await this.cognitoIdentity.confirmSignUp(params).promise();
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(err.message);
-      }
+      throw new Error(getErrorMessage(err));
     }
-  }
-
-  private generateHash(username: string): string {
-    return crypto
-      .createHmac("SHA256", this.secretHash)
-      .update(username + this.clientId)
-      .digest("base64");
   }
 }
 
