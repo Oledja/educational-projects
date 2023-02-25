@@ -1,8 +1,5 @@
 service: getting-started
 
-plugins:
-  - serverless-webpack
-
 provider:
   name: aws
   runtime: nodejs16.x
