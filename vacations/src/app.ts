@@ -3,6 +3,6 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const FILE_PATH = process.env.FILE_PATH;
-const result = transform(FILE_PATH);
+const filePath = process.env.FILE_PATH;
+const result = transform(filePath);
 console.log(result);
