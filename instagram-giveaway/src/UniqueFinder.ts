@@ -1,8 +1,4 @@
-import {
-  findAllUniqueValues,
-  readDir,
-  uniqueValuesInFile,
-} from "./utils/readDir";
+import { findAllUniqueValues, readDir } from "./utils/readDir";
 
 class UniqueFinder {
   private files: string[][];
