@@ -18,15 +18,13 @@ const findGeolocation = (
 };
 
 const parseGeolocations = (geolocations: string[]): Geolocation[] => {
-  const parsedLocation: Geolocation[] = [];
-  geolocations.forEach((ip: string) => {
+  return geolocations.map((ip: string) => {
     const rawResponse = ip.split('"').join("").split(",");
     const start = parseInt(rawResponse[0]);
     const end = parseInt(rawResponse[1]);
     const location = rawResponse[2];
-    parsedLocation.push({ start, end, location });
+    return { start, end, location };
   });
-  return parsedLocation;
 };
 
 const ipToInt = (ip: string): number => {
