@@ -1,24 +1,24 @@
 import { Request, Response } from "express";
-import DataService from "../services/DataService";
+import Service from "../services/Service";
 import getErrorMessage from "../utils/getErrorMessage";
 
-class DataController {
-  private dataService = new DataService();
+class Controller {
+  private service = new Service();
 
-  saveData = async (req: Request, res: Response) => {
+  save = async (req: Request, res: Response) => {
     try {
       const { body: data, url: route } = req;
-      await this.dataService.saveData(route, data);
+      await this.service.save(route, data);
       res.status(200).json("Data saved successfully");
     } catch (err) {
       res.status(500).json(getErrorMessage(err));
     }
   };
 
-  getData = async (req: Request, res: Response) => {
+  get = async (req: Request, res: Response) => {
     try {
       const { url: route } = req;
-      const response = await this.dataService.getData(route);
+      const response = await this.service.get(route);
       if (response) {
         response;
         res.status(200).json(JSON.parse(response.data));
@@ -29,4 +29,4 @@ class DataController {
   };
 }
 
-export default DataController;
+export default Controller;

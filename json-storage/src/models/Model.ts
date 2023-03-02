@@ -1,7 +1,7 @@
-import IDataModel from "../interfaces/DataModelResponse";
 import mongoose, { Schema } from "mongoose";
+import ModelResponse from "../interfaces/ModelResponse";
 
-const DataModel = new Schema({
+const Model = new Schema({
   route: {
     type: String,
     required: true,
@@ -12,4 +12,4 @@ const DataModel = new Schema({
   },
 });
 
-export default mongoose.model<IDataModel>("jsons", DataModel);
+export default mongoose.model<ModelResponse>("jsons", Model);
