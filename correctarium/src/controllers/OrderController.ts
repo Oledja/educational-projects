@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import CreateOrder from "../interfaces/CreateOrder";
 import OrderService from "../services/OrderService";
+import { getErrorMessage } from "../utils/getErrorMessage";
 
 class OrderController {
   private orderService = new OrderService();
@@ -11,8 +12,7 @@ class OrderController {
       const response = this.orderService.makeOrder(order);
       res.status(200).json(response);
     } catch (err) {
-      if (err instanceof Error) res.status(500).json(err.message);
-      res.status(500).json(new String(err));
+      res.status(500).json(getErrorMessage(err));
     }
   };
 }

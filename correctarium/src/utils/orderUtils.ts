@@ -1,5 +1,10 @@
-import ReadOrder from "../interfaces/ReadOrder";
+import ReadOrder from "../interfaces/Order";
 
+const END_WORK_HOURS = 19;
+const START_WORK_HOURS = 10;
+const MIN_WORK_TIME = 60;
+const START_WORK_TIME = 30;
+const MIN_CHARACTERS_COUNT = 1000;
 const isWorkDay = (date: Date): boolean => {
   const day = date.getDay();
   return day < 6 && day > 0;
@@ -7,7 +12,7 @@ const isWorkDay = (date: Date): boolean => {
 
 const isWorkHours = (date: Date): boolean => {
   const time = date.getHours();
-  return time < 19 && time >= 10;
+  return time < END_WORK_HOURS && time >= START_WORK_HOURS;
 };
 
 const getNextDay = (date: Date): Date => {
@@ -22,8 +27,9 @@ const getWorkTime = (date: Date): number => {
 };
 
 const getWorkDay = (date: Date): Date => {
-  if (isWorkDay(date) && date.getHours() < 10) date.setHours(10, 0, 0);
-  while (!isWorkDay(date) || date.getHours() >= 19) {
+  if (isWorkDay(date) && date.getHours() < START_WORK_HOURS)
+    date.setHours(10, 0, 0);
+  while (!isWorkDay(date) || date.getHours() >= END_WORK_HOURS) {
     date.setDate(date.getDate() + 1);
     date.setHours(10, 0, 0);
   }
@@ -35,44 +41,42 @@ const getTime = (
   mimetypeCoef: number,
   count: number
 ): number => {
-  const minTime = 60;
-  const startTime = 30;
-  let time = count * (3600 / amountLetters);
-  time = Math.round(time / 60 + startTime);
-  time = time <= minTime ? minTime : time;
-  return time * 60 * 1000 * mimetypeCoef;
+  let leadTime = count * (3600 / amountLetters);
+  leadTime = Math.round(leadTime / 60 + START_WORK_TIME);
+  leadTime = leadTime <= MIN_WORK_TIME ? MIN_WORK_TIME : leadTime;
+  return leadTime * 60 * 1000 * mimetypeCoef;
 };
 
 const getPrice = (
-  languageCoef: number,
+  price: number,
   mimetypeCoef: number,
   count: number
 ): number => {
-  const minCount = 1000;
-  if (count <= minCount) return languageCoef * minCount * mimetypeCoef;
-  return parseFloat((count * languageCoef * mimetypeCoef).toFixed(2));
+  if (count <= MIN_CHARACTERS_COUNT)
+    return price * MIN_WORK_TIME * mimetypeCoef;
+  return parseFloat((count * price * mimetypeCoef).toFixed(2));
 };
 
-const getDeadline = (date: Date, time: number): Date => {
+const getDeadline = (date: Date, leadTime: number): Date => {
   if (!isWorkHours(date) || !isWorkDay(date)) date = getWorkDay(new Date(date));
   const workTime = getWorkTime(date);
-  if (workTime >= time) return new Date(date.getTime() + time);
+  if (workTime >= leadTime) return new Date(date.getTime() + leadTime);
   const nextDate = getNextDay(date);
-  const timeLeft = time - workTime;
+  const timeLeft = leadTime - workTime;
   return getDeadline(nextDate, timeLeft);
 };
 
 const prepareResponse = (
-  price: number,
-  time: number,
+  totalPrice: number,
+  leadTime: number,
   deadline: Date
 ): ReadOrder => {
-  const timeToMinutes = time / 1000 / 60;
+  const timeToMinutes = leadTime / MIN_CHARACTERS_COUNT / 60;
   const workHours = Math.floor(timeToMinutes / 60);
   const workMinutes = Math.round(timeToMinutes - workHours * 60);
   return {
-    price,
-    time: workHours + ":" + workMinutes,
+    totalPrice,
+    leadTime: `${workHours} : ${workMinutes}`,
     deadline: deadline.getTime(),
     deadline_date: deadline
       .toLocaleString()
