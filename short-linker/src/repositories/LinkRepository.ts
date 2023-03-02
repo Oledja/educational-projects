@@ -1,11 +1,11 @@
-import ShortLinkerResponse from "../interfaces/ShortLinkerResponse";
 import { INSERT, SELECT } from "../utils/Queries";
 import * as dotenv from "dotenv";
 import { pool } from "../db/connection";
+import LinkResponse from "../interfaces/LinkResponse";
 
 dotenv.config();
 
-class ShortLinkerRepository {
+class LinkRepository {
   private connection = pool;
 
   save = async (shortLink: string, url: string) => {
@@ -13,16 +13,11 @@ class ShortLinkerRepository {
     connection.query(INSERT, [shortLink, url]);
   };
 
-  getUrlByShortLink = async (
-    shortLink: string
-  ): Promise<ShortLinkerResponse> => {
+  getUrlByLink = async (shortLink: string): Promise<LinkResponse> => {
     const connection = await this.connection.getConnection();
-    const [rows] = await connection.query<ShortLinkerResponse[]>(
-      SELECT,
-      shortLink
-    );
+    const [rows] = await connection.query<LinkResponse[]>(SELECT, shortLink);
     return rows[0];
   };
 }
 
-export default ShortLinkerRepository;
+export default LinkRepository;

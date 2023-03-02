@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import axios from "axios";
 
-const linkerMiddleware = async (
+const linkMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -17,4 +17,4 @@ const linkerMiddleware = async (
   }
 };
 
-export default linkerMiddleware;
+export default linkMiddleware;
