@@ -1,39 +1,71 @@
 import OrderRepository from "../repositories/OrderRepository";
-import MetricService from "./MetricsService";
-import { errorHandler } from "../errors/errorHandler";
-import * as queries from "../queries/Queries";
+import { getErrorMessage } from "../utils/getErrorMessage";
+import Order from "../interfices/Order";
+import OrderProductInfo from "../interfices/OrderProductInfo";
+import Stats from "../interfices/Stats";
+import * as queries from "../utils/queries";
 
 class OrderService {
   private orderRepository = new OrderRepository();
 
-  public getAll = async () => {
+  public getAll = async (): Promise<{
+    orders: Order[];
+    stats: Stats;
+  }> => {
     try {
-      const { rows, rowCount } = await this.orderRepository.getAll();
-      MetricService.addWhereQuery(rowCount, queries.GET_ALL_ORDERS);
-      return rows;
+      const orders = await this.orderRepository.getAll();
+      const stats: Stats = {
+        log: [queries.GET_ALL_ORDERS],
+        queries: 1,
+        results: orders.length,
+        select: 1,
+      };
+      return { orders, stats };
     } catch (err) {
-      return errorHandler(err);
+      throw new Error(getErrorMessage(err));
     }
   };
 
-  public getById = async (id: string) => {
+  public getById = async (
+    id: string
+  ): Promise<{
+    order: Order;
+    stats: Stats;
+  }> => {
     try {
-      const { rows, rowCount } = await this.orderRepository.getOrderById(id);
-      MetricService.addWhereQuery(rowCount, queries.GET_ORDER_BY_ID);
-      return rows;
+      const order = await this.orderRepository.getOrderById(id);
+      if (!order) throw new Error(`Order with id: <${id} doesn't exists>`);
+      const stats: Stats = {
+        log: [queries.GET_ORDER_BY_ID],
+        queries: 1,
+        results: 1,
+        select: 1,
+        selectWhere: 1,
+      };
+      return { order, stats };
     } catch (err) {
-      return errorHandler(err);
+      throw new Error(getErrorMessage(err));
     }
   };
 
-  public getOrderProductsById = async (id: string) => {
+  public getOrderProductsById = async (
+    id: string
+  ): Promise<{
+    orders: OrderProductInfo[];
+    stats: Stats;
+  }> => {
     try {
-      const { rows, rowCount } =
-        await this.orderRepository.getOrderProductsById(id);
-      MetricService.addWhereQuery(rowCount, queries.GET_ORDER_PRODUCTS);
-      return rows;
+      const orders = await this.orderRepository.getOrderProductsById(id);
+      const stats: Stats = {
+        log: [queries.GET_ORDER_PRODUCTS],
+        queries: 1,
+        results: orders.length,
+        select: 1,
+        selectWhere: 1,
+      };
+      return { orders, stats };
     } catch (err) {
-      return errorHandler(err);
+      throw new Error(getErrorMessage(err));
     }
   };
 }

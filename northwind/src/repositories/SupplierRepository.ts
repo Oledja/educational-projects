@@ -1,19 +1,26 @@
-import Supplier from "../@types/Supplier";
-import { pool } from "../db/PostgresPoolConnections";
+import Supplier from "../interfices/Supplier";
+import { pool } from "../db/connection";
 import { PoolClient } from "pg";
-import * as queries from "../queries/Queries";
+import * as queries from "../utils/queries";
 
 class SupplierRepository {
   private client: Promise<PoolClient> = pool.connect();
 
-  public getAll = async () => {
+  public getAll = async (): Promise<Supplier[]> => {
     const client = await this.client;
-    return client.query<Supplier>(queries.GET_ALL_SUPPLIERS);
+    const { rows: result } = await client.query<Supplier>(
+      queries.GET_ALL_SUPPLIERS
+    );
+    return result;
   };
 
-  public getById = async (id: string) => {
+  public getById = async (id: string): Promise<Supplier> => {
     const client = await this.client;
-    return client.query<Supplier>(queries.GET_SUPPLIER_BY_ID, [id]);
+    const { rows: result } = await client.query<Supplier>(
+      queries.GET_SUPPLIER_BY_ID,
+      [id]
+    );
+    return result[0];
   };
 }
 

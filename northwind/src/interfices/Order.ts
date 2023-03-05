@@ -1,4 +1,4 @@
-type Order = {
+interface Order {
   customer_id: string;
   employee_id: number;
   freight: number;
@@ -19,6 +19,6 @@ type Order = {
   total_products_discount: number;
   total_products_items: number;
   total_products_price: number;
-};
+}
 
 export default Order;

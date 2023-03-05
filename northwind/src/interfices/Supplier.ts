@@ -1,4 +1,4 @@
-type Supplier = {
+interface Supplier {
   address: string;
   city: string;
   company_name: string;
@@ -11,6 +11,6 @@ type Supplier = {
   postal_code: string;
   region: string;
   supplier_id?: number;
-};
+}
 
 export default Supplier;

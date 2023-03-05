@@ -1,16 +1,9 @@
-import express from "express";
-import {
-  getMetrics,
-  resetMetrics,
-  getNearestAirport,
-  getCountry,
-} from "../controllers/MetricController";
+import Router from "express";
+import { getAirport, getCountry } from "../controllers/MetricControllers";
 
-const metricRouter = express.Router();
+const metricRouter = Router();
 
-metricRouter.get("/api/v1/metrics", getMetrics);
-metricRouter.get("/api/v1/metrics/reset", resetMetrics);
-metricRouter.get("/api/v1/metrics/airport", getNearestAirport);
-metricRouter.get("/api/v1/metrics/country", getCountry);
+metricRouter.get("/metrics/airport", getAirport);
+metricRouter.get("/metrics/country", getCountry);
 
 export { metricRouter };

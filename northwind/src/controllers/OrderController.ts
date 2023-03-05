@@ -1,39 +1,40 @@
 import { Request, Response } from "express";
 import OrderService from "../services/OrderService";
+import { getErrorMessage } from "../utils/getErrorMessage";
 
 class OrderConrtoller {
   private orderService = new OrderService();
 
   public getAll = async (req: Request, res: Response) => {
-    const response = await this.orderService.getAll();
-    if (response instanceof Error) {
-      res.status(400).json(response.message);
-    } else {
+    try {
+      const response = await this.orderService.getAll();
       res.status(200).json(response);
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
   };
 
   public getById = async (req: Request, res: Response) => {
-    const {
-      params: { id },
-    } = req;
-    const response = await this.orderService.getById(id);
-    if (response instanceof Error) {
-      res.status(400).json(response.message);
-    } else {
+    try {
+      const {
+        params: { id },
+      } = req;
+      const response = await this.orderService.getById(id);
       res.status(200).json(response);
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
   };
 
   public getOrderProductsById = async (req: Request, res: Response) => {
-    const {
-      params: { id },
-    } = req;
-    const response = await this.orderService.getOrderProductsById(id);
-    if (response instanceof Error) {
-      res.status(400).json(response.message);
-    } else {
+    try {
+      const {
+        params: { id },
+      } = req;
+      const response = await this.orderService.getOrderProductsById(id);
       res.status(200).json(response);
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
   };
 }

@@ -1,27 +1,28 @@
 import { Request, Response } from "express";
 import EmployeeService from "../services/EmployeeService";
+import { getErrorMessage } from "../utils/getErrorMessage";
 
 class EmployeeController {
   private employeeService = new EmployeeService();
 
   public getAll = async (req: Request, res: Response) => {
-    const response = await this.employeeService.getAll();
-    if (response instanceof Error) {
-      res.status(400).json(response.message);
-    } else {
+    try {
+      const response = await this.employeeService.getAll();
       res.status(200).json(response);
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
   };
 
   public getById = async (req: Request, res: Response) => {
-    const {
-      params: { id },
-    } = req;
-    const response = await this.employeeService.getById(id);
-    if (response instanceof Error) {
-      res.status(400).json(response.message);
-    } else {
+    try {
+      const {
+        params: { id },
+      } = req;
+      const response = await this.employeeService.getById(id);
       res.status(200).json(response);
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
   };
 }

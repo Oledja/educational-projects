@@ -1,19 +1,26 @@
-import { pool } from "../db/PostgresPoolConnections";
+import { pool } from "../db/connection";
 import { PoolClient } from "pg";
-import Employee from "../@types/Employee";
-import * as queries from "../queries/Queries";
+import Employee from "../interfices/Employee";
+import * as queries from "../utils/queries";
 
 class EmployeeRepository {
   private client: Promise<PoolClient> = pool.connect();
 
-  public getAll = async () => {
+  public getAll = async (): Promise<Employee[]> => {
     const client = await this.client;
-    return client.query<Employee>(queries.GET_ALL_EMPLOYEES);
+    const { rows: result } = await client.query<Employee>(
+      queries.GET_ALL_EMPLOYEES
+    );
+    return result;
   };
 
-  public getById = async (id: string) => {
+  public getById = async (id: string): Promise<Employee> => {
     const client = await this.client;
-    return client.query<Employee>(queries.GET_EMPLOYEES_BY_ID, [id]);
+    const { rows: result } = await client.query<Employee>(
+      queries.GET_EMPLOYEES_BY_ID,
+      [id]
+    );
+    return result[0];
   };
 }
 

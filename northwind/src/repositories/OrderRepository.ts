@@ -1,24 +1,36 @@
-import { pool } from "../db/PostgresPoolConnections";
+import { pool } from "../db/connection";
 import { PoolClient } from "pg";
-import Order from "../@types/Order";
-import * as queries from "../queries/Queries";
+import Order from "../interfices/Order";
+import * as queries from "../utils/queries";
+import OrderProductInfo from "../interfices/OrderProductInfo";
 
 class OrderRepository {
   private client: Promise<PoolClient> = pool.connect();
 
-  public getAll = async () => {
+  public getAll = async (): Promise<Order[]> => {
     const client = await this.client;
-    return client.query<Order>(queries.GET_ALL_ORDERS);
+    const { rows: result } = await client.query<Order>(queries.GET_ALL_ORDERS);
+    return result;
   };
 
-  public getOrderById = async (id: string) => {
+  public getOrderById = async (id: string): Promise<Order> => {
     const client = await this.client;
-    return client.query<Order>(queries.GET_ORDER_BY_ID, [id]);
+    const { rows: result } = await client.query<Order>(
+      queries.GET_ORDER_BY_ID,
+      [id]
+    );
+    return result[0];
   };
 
-  public getOrderProductsById = async (id: string) => {
+  public getOrderProductsById = async (
+    id: string
+  ): Promise<OrderProductInfo[]> => {
     const client = await this.client;
-    return client.query<Order>(queries.GET_ORDER_PRODUCTS, [id]);
+    const { rows: result } = await client.query<OrderProductInfo>(
+      queries.GET_ORDER_PRODUCTS,
+      [id]
+    );
+    return result;
   };
 }
 

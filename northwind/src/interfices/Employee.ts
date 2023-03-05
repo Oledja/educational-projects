@@ -1,4 +1,4 @@
-type Employee = {
+interface Employee {
   address: string;
   birth_date: Date;
   city: string;
@@ -25,6 +25,6 @@ type Employee = {
   report_title_of_courtesy: string;
   title: string;
   title_of_courtesy: string;
-};
+}
 
 export default Employee;

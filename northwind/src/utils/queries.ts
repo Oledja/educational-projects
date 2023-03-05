@@ -86,7 +86,7 @@ SELECT
   e.notes 
 FROM 
   employees AS e 
-  LEFT JOIN employees AS report ON e.reports_to = report.employee_id
+LEFT JOIN employees AS report ON e.reports_to = report.employee_id
 `;
 
 const GET_EMPLOYEES_BY_ID = `

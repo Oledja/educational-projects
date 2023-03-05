@@ -1,28 +1,52 @@
 import EmployeeRepository from "../repositories/EmployeeRepository";
-import * as queries from "../queries/Queries";
-import MetricService from "./MetricsService";
-import { errorHandler } from "../errors/errorHandler";
+import { getErrorMessage } from "../utils/getErrorMessage";
+import Employee from "../interfices/Employee";
+import Stats from "../interfices/Stats";
+import * as queries from "../utils/queries";
 
 class EmployeeService {
   private employeeRepository = new EmployeeRepository();
 
-  public getAll = async () => {
+  public getAll = async (): Promise<{
+    employees: Employee[];
+    stats: Stats;
+  }> => {
     try {
-      const { rows, rowCount } = await this.employeeRepository.getAll();
-      MetricService.addLeftJoinQuery(rowCount, queries.GET_ALL_EMPLOYEES);
-      return rows;
+      const employees = await this.employeeRepository.getAll();
+      const stats: Stats = {
+        log: [queries.GET_ALL_EMPLOYEES],
+        queries: 1,
+        results: employees.length,
+        select: 1,
+        selectLeftJoin: 1,
+      };
+      return { employees, stats };
     } catch (err) {
-      return errorHandler(err);
+      throw new Error(getErrorMessage(err));
     }
   };
 
-  public getById = async (id: string) => {
+  public getById = async (
+    id: string
+  ): Promise<{
+    employee: Employee;
+    stats: Stats;
+  }> => {
     try {
-      const { rows, rowCount } = await this.employeeRepository.getById(id);
-      MetricService.addLeftJoinQuery(rowCount, queries.GET_EMPLOYEES_BY_ID);
-      return rows;
+      const employee = await this.employeeRepository.getById(id);
+      if (!employee)
+        throw new Error(`Employee with id: <${id}> doesn't exists`);
+      const stats: Stats = {
+        log: [queries.GET_EMPLOYEES_BY_ID],
+        queries: 1,
+        results: 1,
+        select: 1,
+        selectWhere: 1,
+        selectLeftJoin: 1,
+      };
+      return { employee, stats };
     } catch (err) {
-      return errorHandler(err);
+      throw new Error(getErrorMessage(err));
     }
   };
 }

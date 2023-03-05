@@ -1,27 +1,28 @@
 import { Request, Response } from "express";
 import SupplierService from "../services/SupplierService";
+import { getErrorMessage } from "../utils/getErrorMessage";
 
 class SupplierController {
   private supplierService = new SupplierService();
 
   public getAll = async (req: Request, res: Response) => {
-    const response = await this.supplierService.getAll();
-    if (response instanceof Error) {
-      res.status(400).json(response.message);
-    } else {
+    try {
+      const response = await this.supplierService.getAll();
       res.status(200).json(response);
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
   };
 
   public getById = async (req: Request, res: Response) => {
-    const {
-      params: { id },
-    } = req;
-    const response = await this.supplierService.getById(id);
-    if (response instanceof Error) {
-      res.status(400).json(response.message);
-    } else {
+    try {
+      const {
+        params: { id },
+      } = req;
+      const response = await this.supplierService.getById(id);
       res.status(200).json(response);
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
     }
   };
 }

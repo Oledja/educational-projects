@@ -1,40 +1,70 @@
 import ProductReposotory from "../repositories/ProductRepository";
-import MetricService from "./MetricsService";
-import { errorHandler } from "../errors/errorHandler";
-import * as queries from "../queries/Queries";
+import { getErrorMessage } from "../utils/getErrorMessage";
+import Product from "../interfices/Product";
+import * as queries from "../utils/queries";
+import Stats from "../interfices/Stats";
 
 class ProductService {
   private productRepository = new ProductReposotory();
 
-  public getAll = async () => {
+  public getAll = async (): Promise<{
+    products: Product[];
+    stats: Stats;
+  }> => {
     try {
-      const { rows, rowCount } = await this.productRepository.getAll();
-      MetricService.addSelectQuery(rowCount, queries.GET_ALL_PRODUCTS);
-      return rows;
+      const products = await this.productRepository.getAll();
+      const stats: Stats = {
+        log: [queries.GET_ALL_PRODUCTS],
+        queries: 1,
+        results: products.length,
+        select: 1,
+      };
+      return { products, stats };
     } catch (err) {
-      return errorHandler(err);
+      throw new Error(getErrorMessage(err));
     }
   };
 
-  public getById = async (id: string) => {
+  public getById = async (
+    id: string
+  ): Promise<{
+    product: Product;
+    stats: Stats;
+  }> => {
     try {
-      const { rows, rowCount } = await this.productRepository.getById(id);
-      MetricService.addWhereQuery(rowCount, queries.GET_PRODUCTS_BY_ID);
-      return rows;
+      const product = await this.productRepository.getById(id);
+      if (!product) throw new Error(`Product with id: <${id}> doesn't exists`);
+      const stats: Stats = {
+        log: [queries.GET_PRODUCTS_BY_ID],
+        queries: 1,
+        results: 1,
+        select: 1,
+        selectWhere: 1,
+      };
+      return { product, stats };
     } catch (err) {
-      return errorHandler(err);
+      throw new Error(getErrorMessage(err));
     }
   };
 
-  public getByFilter = async (filter: string) => {
+  public getByFilter = async (
+    filter: string
+  ): Promise<{
+    products: Product[];
+    stats: Stats;
+  }> => {
     try {
-      const { rows, rowCount } = await this.productRepository.getByFilter(
-        filter
-      );
-      MetricService.addWhereQuery(rowCount, queries.GET_PRODUCTS_BY_FILTER);
-      return rows;
+      const products = await this.productRepository.getByFilter(filter);
+      const stats: Stats = {
+        log: [queries.GET_PRODUCTS_BY_FILTER],
+        queries: 1,
+        results: 1,
+        select: 1,
+        selectWhere: 1,
+      };
+      return { products, stats };
     } catch (err) {
-      return errorHandler(err);
+      throw new Error(getErrorMessage(err));
     }
   };
 }

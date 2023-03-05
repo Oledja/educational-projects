@@ -1,4 +1,4 @@
-type Customer = {
+interface Customer {
   address: string;
   city: string;
   company_name: string;
@@ -10,6 +10,6 @@ type Customer = {
   phone: string;
   postal_code: string;
   region: string;
-};
+}
 
 export default Customer;

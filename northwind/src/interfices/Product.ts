@@ -1,4 +1,4 @@
-type Product = {
+interface Product {
   category_id: number;
   discounter: number;
   product_id: number;
@@ -10,6 +10,6 @@ type Product = {
   unit_price: number;
   units_in_stock: number;
   units_on_order: number;
-};
+}
 
 export default Product;

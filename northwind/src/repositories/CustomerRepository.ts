@@ -1,26 +1,35 @@
-import { pool } from "../db/PostgresPoolConnections";
+import { pool } from "../db/connection";
 import { PoolClient } from "pg";
-import Customer from "../@types/Customer";
-import * as queries from "../queries/Queries";
+import Customer from "../interfices/Customer";
+import * as queries from "../utils/queries";
 
 class CustomerRepository {
   private client: Promise<PoolClient> = pool.connect();
 
-  public getAll = async () => {
+  public getAll = async (): Promise<Customer[]> => {
     const client = await this.client;
-    return client.query<Customer>(queries.GET_ALL_CUSTOMERS);
+    const { rows: result } = await client.query<Customer>(
+      queries.GET_ALL_CUSTOMERS
+    );
+    return result;
   };
 
-  public getById = async (id: string) => {
+  public getById = async (id: string): Promise<Customer> => {
     const client = await this.client;
-    return client.query<Customer>(queries.GET_CUSTOMER_BY_ID, [id]);
+    const { rows: result } = await client.query<Customer>(
+      queries.GET_CUSTOMER_BY_ID,
+      [id]
+    );
+    return result[0];
   };
 
-  public getByFilter = async (filter: string) => {
+  public getByFilter = async (filter: string): Promise<Customer[]> => {
     const client = await this.client;
-    return client.query<Customer>(queries.GET_CUSTOMERS_BY_FILTER, [
-      `%${filter}%`,
-    ]);
+    const { rows: result } = await client.query<Customer>(
+      queries.GET_CUSTOMERS_BY_FILTER,
+      [`%${filter}%`]
+    );
+    return result;
   };
 }
 
