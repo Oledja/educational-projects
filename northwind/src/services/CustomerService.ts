@@ -58,7 +58,6 @@ class CustomerService {
         queries: 1,
         results: customers.length,
         select: 1,
-        selectWhere: 1,
       };
       return { customers, stats };
     } catch (err) {
