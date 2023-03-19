@@ -1,5 +1,10 @@
+type CustomLog = {
+  duration: number;
+  query: string;
+};
+
 interface Stats {
-  log: string[];
+  log: CustomLog[];
   queries: number;
   results: number;
   select?: number;

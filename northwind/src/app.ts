@@ -7,19 +7,11 @@ import { customerRouter } from "./routes/CustomerRouter";
 import * as dotenv from "dotenv";
 import { metricRouter } from "./routes/MetricRouter";
 import cors from "cors";
-import { readFileSync } from "fs";
-import https from "https";
 
 dotenv.config();
 
 const port = process.env.APP_PORT;
-const certPath = process.env.CERT_PATH;
-const keyPath = process.env.KEY_PATH;
-const certificate = readFileSync(certPath);
-const privateKey = readFileSync(keyPath);
-const credentials = { key: privateKey, cert: certificate };
 const app = express();
-const httpsServer = https.createServer(credentials, app);
 
 app.all("*", (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -45,6 +37,6 @@ app.use(
   customerRouter,
   metricRouter
 );
-httpsServer.listen(port, () => {
-  console.log(`Server started on port ${port}`);
+app.listen(port, () => {
+  console.log(`Service started on port ${port}`);
 });

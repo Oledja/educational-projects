@@ -1,9 +1,8 @@
 import Router from "express";
-import { getAirport, getCountry } from "../controllers/MetricControllers";
+import { getMetrics } from "../controllers/MetricControllers";
 
 const metricRouter = Router();
 
-metricRouter.get("/metrics/airport", getAirport);
-metricRouter.get("/metrics/country", getCountry);
+metricRouter.get("/metrics", getMetrics);
 
 export { metricRouter };

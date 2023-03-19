@@ -3,6 +3,7 @@ import { PoolClient } from "pg";
 import Order from "../interfices/Order";
 import * as queries from "../utils/queries";
 import OrderProductInfo from "../interfices/OrderProductInfo";
+import TotalEntityResult from "../interfices/TotalEntityResult";
 
 class OrderRepository {
   private client: Promise<PoolClient> = pool.connect();
@@ -31,6 +32,14 @@ class OrderRepository {
       [id]
     );
     return result;
+  };
+
+  public getNumberOfOrders = async (): Promise<TotalEntityResult> => {
+    const client = await this.client;
+    const { rows: result } = await client.query<TotalEntityResult>(
+      queries.GET_NUMBER_OF_ORDERS
+    );
+    return result[0];
   };
 }
 

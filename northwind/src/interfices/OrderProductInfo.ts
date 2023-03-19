@@ -1,5 +1,6 @@
 interface OrderProductInfo {
   discount: number;
+  product_id: number;
   product_name: string;
   quantity: number;
   total_products_price: number;

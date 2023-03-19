@@ -13,12 +13,20 @@ class OrderService {
     stats: Stats;
   }> => {
     try {
+      const startGetAll = performance.now();
       const orders = await this.orderRepository.getAll();
+      const timeGetAll = performance.now() - startGetAll;
+      const startNumOfOrders = performance.now();
+      const { total } = await this.orderRepository.getNumberOfOrders();
+      const timeNumOfOrders = performance.now() - startNumOfOrders;
       const stats: Stats = {
-        log: [queries.GET_ALL_ORDERS],
-        queries: 1,
-        results: orders.length,
-        select: 1,
+        log: [
+          { duration: timeNumOfOrders, query: queries.GET_NUMBER_OF_ORDERS },
+          { duration: timeGetAll, query: queries.GET_ALL_ORDERS },
+        ],
+        queries: 2,
+        results: total,
+        select: 2,
       };
       return { orders, stats };
     } catch (err) {
@@ -33,10 +41,12 @@ class OrderService {
     stats: Stats;
   }> => {
     try {
+      const startGetById = performance.now();
       const order = await this.orderRepository.getOrderById(id);
+      const timeGetById = performance.now() - startGetById;
       if (!order) throw new Error(`Order with id: <${id} doesn't exists>`);
       const stats: Stats = {
-        log: [queries.GET_ORDER_BY_ID],
+        log: [{ duration: timeGetById, query: queries.GET_ORDER_BY_ID }],
         queries: 1,
         results: 1,
         select: 1,
@@ -55,9 +65,13 @@ class OrderService {
     stats: Stats;
   }> => {
     try {
+      const startGetOrderProdById = performance.now();
       const orders = await this.orderRepository.getOrderProductsById(id);
+      const timeGetOrderProdById = performance.now() - startGetOrderProdById;
       const stats: Stats = {
-        log: [queries.GET_ORDER_PRODUCTS],
+        log: [
+          { duration: timeGetOrderProdById, query: queries.GET_ORDER_PRODUCTS },
+        ],
         queries: 1,
         results: orders.length,
         select: 1,

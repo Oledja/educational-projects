@@ -56,6 +56,8 @@ WHERE
   OR address ILIKE $1
 `;
 
+const GET_NUMBER_OF_CUSTOMERS = `SELECT COUNT(1) as total FROM customers`;
+
 const GET_ALL_EMPLOYEES = `
 SELECT 
   report.employee_id AS report_employee_id, 
@@ -123,6 +125,8 @@ FROM
 WHERE 
   e.employee_id = $1
 `;
+
+const GET_NUMBER_OF_EMPLOYEES = `SELECT COUNT(1) as total FROM employees`;
 
 const GET_ALL_ORDERS = `
 SELECT 
@@ -195,6 +199,7 @@ ORDER By
 
 const GET_ORDER_PRODUCTS = `
 SELECT 
+  p.product_id,
   p.product_name, 
   quantity, 
   od.unit_price, 
@@ -207,6 +212,8 @@ WHERE
   od.product_id = p.product_id 
   AND od.order_id = $1
 `;
+
+const GET_NUMBER_OF_ORDERS = `SELECT COUNT(1) as total FROM orders`;
 
 const GET_ALL_PRODUCTS = `
 SELECT 
@@ -267,6 +274,8 @@ WHERE
   product_name ILIKE $1
 `;
 
+const GET_NUMBER_OF_PRODUCTS = `SELECT COUNT(1) as total FROM products`;
+
 const GET_ALL_SUPPLIERS = `
 SELECT 
   supplier_id, 
@@ -305,6 +314,8 @@ WHERE
   supplier_id = $1
 `;
 
+const GET_NUMBER_OF_SUPPLIERS = `SELECT COUNT(1) as total FROM suppliers`;
+
 export {
   GET_ALL_CUSTOMERS,
   GET_CUSTOMER_BY_ID,
@@ -319,4 +330,9 @@ export {
   GET_PRODUCTS_BY_FILTER,
   GET_ALL_SUPPLIERS,
   GET_SUPPLIER_BY_ID,
+  GET_NUMBER_OF_CUSTOMERS,
+  GET_NUMBER_OF_EMPLOYEES,
+  GET_NUMBER_OF_ORDERS,
+  GET_NUMBER_OF_SUPPLIERS,
+  GET_NUMBER_OF_PRODUCTS,
 };

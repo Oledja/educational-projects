@@ -2,6 +2,7 @@ import Product from "../interfices/Product";
 import { pool } from "../db/connection";
 import { PoolClient } from "pg";
 import * as queries from "../utils/queries";
+import TotalEntityResult from "../interfices/TotalEntityResult";
 
 class ProductReposotory {
   private client: Promise<PoolClient> = pool.connect();
@@ -31,6 +32,14 @@ class ProductReposotory {
       [`%${filter}%`]
     );
     return result;
+  };
+
+  public getNumberOfProducts = async (): Promise<TotalEntityResult> => {
+    const client = await this.client;
+    const { rows: result } = await client.query<TotalEntityResult>(
+      queries.GET_NUMBER_OF_PRODUCTS
+    );
+    return result[0];
   };
 }
 
