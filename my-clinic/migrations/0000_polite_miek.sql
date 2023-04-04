@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS cities (
+CREATE TABLE IF NOT EXISTS "cities" (
 	"city_slug" varchar(40),
 	"city_name" varchar(50),
 	"state" varchar(20),
@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS cities (
 	"about_bookphysio" text
 );
 
-CREATE TABLE IF NOT EXISTS clinics (
-	"long_name_version" varchar(60) NOT NULL,
+CREATE TABLE IF NOT EXISTS "clinics" (
+	"full_name" varchar(60) NOT NULL,
 	"registration_link" varchar(256) NOT NULL,
 	"pms" varchar(20),
 	"meta_title" varchar(100),
@@ -39,11 +39,13 @@ CREATE TABLE IF NOT EXISTS clinics (
 	"nearby3_link" varchar(40),
 	"nearby4_txt" varchar(40),
 	"nearby4_link" varchar(40),
-	"about_clinic" text NOT NULL
+	"about_clinic" text NOT NULL,
+	"latitude" serial NOT NULL,
+	"longitude" serial NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS suburbs (
-	"suburb_id" serial PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS "suburbs" (
+	"suburb_id" serial PRIMARY KEY NOT NULL,
 	"suburb_slug" varchar(50),
 	"suburb_name" varchar(50),
 	"city" varchar(50),

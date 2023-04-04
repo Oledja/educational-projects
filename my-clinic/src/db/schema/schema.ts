@@ -5,17 +5,19 @@ import {
   varchar,
   boolean,
   text,
-} from "drizzle-orm-pg";
+  InferModel,
+  real,
+} from "drizzle-orm/pg-core";
 
 export const clinics = pgTable("clinics", {
-  name: varchar("long_name_version", { length: 60 }).notNull(),
+  longName: varchar("full_name", { length: 60 }).notNull(),
   registration: varchar("registration_link", { length: 256 }).notNull(),
   psm: varchar("pms", { length: 20 }),
   metaTitle: varchar("meta_title", { length: 100 }),
   metaDescription: varchar("meta_description", { length: 256 }),
   slug: varchar("slug", { length: 100 }),
   website: varchar("website", { length: 80 }).notNull(),
-  shortName: varchar("clinic_name"),
+  name: varchar("clinic_name").notNull(),
   isDisplay: boolean("display_on_web"),
   clinicSuburbLink: varchar("link_to_clinic_suburb_page"),
   address: varchar("full_address", { length: 256 }).notNull(),
@@ -34,6 +36,8 @@ export const clinics = pgTable("clinics", {
   nearby4: varchar("nearby4_txt", { length: 40 }),
   nearby4Link: varchar("nearby4_link", { length: 40 }),
   about: text("about_clinic").notNull(),
+  latitude: real("latitude"),
+  longitude: real("longitude"),
 });
 
 export const cities = pgTable("cities", {
@@ -80,3 +84,5 @@ export const suburbs = pgTable("suburbs", {
   nearby4State: varchar("nearby4_state", { length: 40 }),
   nearby4Postcode: integer("nearby4_postcode"),
 });
+
+export type Clinic = InferModel<typeof clinics>;

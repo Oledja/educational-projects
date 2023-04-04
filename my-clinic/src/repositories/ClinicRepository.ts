@@ -1,60 +1,82 @@
-import { clinics } from "../data/schema";
-import { connector } from "../db/PostgresPoolConnections";
-import { ilike, like, or } from "drizzle-orm/expressions";
+import { Clinic, clinics } from "../db/schema/schema";
+import { pool } from "../db/connection";
+import { ilike, or, eq } from "drizzle-orm/expressions";
+import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
 
 class ClinicRepository {
-  private db = connector.connect();
+  private db: NodePgDatabase = drizzle(pool);
 
-  public getAll = async () => {
-    const db = await this.db;
-    return db.select(clinics);
+  getAll = async (): Promise<Clinic[]> => {
+    const allClinics: Clinic[] = await this.db.select().from(clinics);
+    return allClinics;
   };
 
-  public getByName = async (name: string) => {
-    const db = await this.db;
-    return db
-      .select(clinics)
+  filterByName = async (name: string): Promise<Clinic[]> => {
+    const clinicsByName: Clinic[] = await this.db
+      .select()
+      .from(clinics)
       .where(
         or(
-          ilike(clinics.name, `%${name}%`),
-          ilike(clinics.shortName, `%${name}%`)
+          ilike(clinics.longName, `%${name}%`),
+          ilike(clinics.name, `%${name}%`)
         )
       );
+    return clinicsByName;
   };
 
-  public getByCity = async (city: string) => {
-    const db = await this.db;
-    return db.select(clinics).where(ilike(clinics.city, `%${city}%`));
+  filterByCity = async (city: string): Promise<Clinic[]> => {
+    const clinicsByCity: Clinic[] = await this.db
+      .select()
+      .from(clinics)
+      .where(ilike(clinics.city, `%${city}%`));
+    return clinicsByCity;
   };
 
-  public getByState = async (state: string) => {
-    const db = await this.db;
-    return db.select(clinics).where(ilike(clinics.state, state));
+  filterByState = async (state: string): Promise<Clinic[]> => {
+    const clinicsByState: Clinic[] = await this.db
+      .select()
+      .from(clinics)
+      .where(ilike(clinics.state, `%${state}%`));
+    return clinicsByState;
   };
 
-  public getByPostcode = async (postcode: string) => {
-    const db = await this.db;
-    return db.select(clinics).where(like(clinics.postcode, postcode));
+  filterByPostcode = async (postcode: string): Promise<Clinic[]> => {
+    const clinicsByPostcode: Clinic[] = await this.db
+      .select()
+      .from(clinics)
+      .where(ilike(clinics.postcode, `%${postcode}%`));
+    return clinicsByPostcode;
   };
 
-  public getBySuburb = async (suburb: string) => {
-    const db = await this.db;
-    return db.select(clinics).where(ilike(clinics.suburb, `%${suburb}%`));
+  filterBySuburb = async (suburb: string): Promise<Clinic[]> => {
+    const clinicsBySuburb: Clinic[] = await this.db
+      .select()
+      .from(clinics)
+      .where(ilike(clinics.suburb, `%${suburb}%`));
+    return clinicsBySuburb;
   };
 
-  public getNearBySuburb = async (suburb: string) => {
-    const db = await this.db;
-    return db
-      .select(clinics)
+  getNearBySuburb = async (suburb: string): Promise<Clinic[]> => {
+    const nearestClinics: Clinic[] = await this.db
+      .select()
+      .from(clinics)
       .where(
         or(
-          ilike(clinics.suburb, suburb),
-          ilike(clinics.nearby1, suburb),
-          ilike(clinics.nearby2, suburb),
-          ilike(clinics.nearby3, suburb),
-          ilike(clinics.nearby4, suburb)
+          ilike(clinics.suburb, `%${suburb}%`),
+          ilike(clinics.nearby1, `%${suburb}%`),
+          ilike(clinics.nearby2, `%${suburb}%`),
+          ilike(clinics.nearby3, `%${suburb}%`),
+          ilike(clinics.nearby4, `%${suburb}%`)
         )
       );
+    return nearestClinics;
+  };
+
+  update = async (clinic: Clinic) => {
+    await this.db
+      .update(clinics)
+      .set(clinic)
+      .where(eq(clinics.name, clinic.name));
   };
 }
 

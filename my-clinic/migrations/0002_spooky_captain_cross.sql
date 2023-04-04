@@ -1,0 +1,1 @@
+ALTER TABLE clinics ALTER COLUMN "clinic_name" SET NOT NULL;

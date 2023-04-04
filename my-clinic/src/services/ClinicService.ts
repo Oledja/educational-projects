@@ -1,47 +1,63 @@
-import Clinic from "../@types/Clinic";
+import { Clinic } from "../db/schema/schema";
 import ClinicRepository from "../repositories/ClinicRepository";
-import { prepareResponse } from "../utill/utill";
+import { getErrorMessage } from "../utill/getErrorMessage";
 
 class ClinicService {
   private clinicRepository = new ClinicRepository();
-
-  public getAll = async () => {
-    const clinics: Clinic[] = await this.clinicRepository.getAll();
-    return prepareResponse(clinics);
+  public getAll = async (): Promise<Clinic[]> => {
+    try {
+      return await this.clinicRepository.getAll();
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
   };
 
-  public getByName = async (name: string) => {
-    const clinics: Clinic[] = await this.clinicRepository.getByName(name);
-    return prepareResponse(clinics);
+  public filterByName = async (name: string): Promise<Clinic[]> => {
+    try {
+      return await this.clinicRepository.filterByName(name);
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
   };
 
-  public getByCity = async (city: string) => {
-    const clinics: Clinic[] = await this.clinicRepository.getByCity(city);
-    return prepareResponse(clinics);
+  public filterByCity = async (city: string): Promise<Clinic[]> => {
+    try {
+      return await this.clinicRepository.filterByCity(city);
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
   };
 
-  public getByState = async (state: string) => {
-    const clinics: Clinic[] = await this.clinicRepository.getByState(state);
-    return prepareResponse(clinics);
+  public filterByState = async (state: string): Promise<Clinic[]> => {
+    try {
+      return await this.clinicRepository.filterByState(state);
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
   };
 
-  public getByPostcode = async (postcode: string) => {
-    const clinics: Clinic[] = await this.clinicRepository.getByPostcode(
-      postcode
-    );
-    return prepareResponse(clinics);
+  public filterByPostcode = async (postcode: string): Promise<Clinic[]> => {
+    try {
+      return await this.clinicRepository.filterByPostcode(postcode);
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
   };
 
-  public getBySuburb = async (suburb: string) => {
-    const clinics: Clinic[] = await this.clinicRepository.getBySuburb(suburb);
-    return prepareResponse(clinics);
+  public filterBySuburb = async (suburb: string): Promise<Clinic[]> => {
+    try {
+      return await this.clinicRepository.filterBySuburb(suburb);
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
   };
 
-  public getNearBySuburb = async (suburb: string) => {
-    const clinics: Clinic[] = await this.clinicRepository.getNearBySuburb(
-      suburb
-    );
-    return prepareResponse(clinics);
+  public getNearBySuburb = async (suburb: string): Promise<Clinic[]> => {
+    try {
+      return await this.clinicRepository.getNearBySuburb(suburb);
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
   };
 }
 

@@ -1,0 +1,4 @@
+ALTER TABLE clinics ALTER COLUMN "latitude" SET DATA TYPE real;
+ALTER TABLE clinics ALTER COLUMN "latitude" DROP NOT NULL;
+ALTER TABLE clinics ALTER COLUMN "longitude" SET DATA TYPE real;
+ALTER TABLE clinics ALTER COLUMN "longitude" DROP NOT NULL;

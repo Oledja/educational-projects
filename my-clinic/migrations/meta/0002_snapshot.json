@@ -1,11 +1,12 @@
 {
-  "version": "3",
+  "version": "5",
   "dialect": "pg",
-  "id": "27c1c098-fe8b-4bc1-b808-c645ad0b50ce",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "be67e119-cb0c-444b-a915-bb63b1de3e0e",
+  "prevId": "bf9c7193-7a7f-44ea-929c-76c52cf9e51d",
   "tables": {
     "cities": {
       "name": "cities",
+      "schema": "",
       "columns": {
         "city_slug": {
           "name": "city_slug",
@@ -81,13 +82,15 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {}
+      "foreignKeys": {},
+      "compositePrimaryKeys": {}
     },
     "clinics": {
       "name": "clinics",
+      "schema": "",
       "columns": {
-        "long_name_version": {
-          "name": "long_name_version",
+        "full_name": {
+          "name": "full_name",
           "type": "varchar(60)",
           "primaryKey": false,
           "notNull": true
@@ -132,7 +135,7 @@
           "name": "clinic_name",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "display_on_web": {
           "name": "display_on_web",
@@ -241,19 +244,33 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {}
+      "foreignKeys": {},
+      "compositePrimaryKeys": {}
     },
     "suburbs": {
       "name": "suburbs",
+      "schema": "",
       "columns": {
         "suburb_id": {
           "name": "suburb_id",
           "type": "serial",
           "primaryKey": true,
-          "notNull": false
+          "notNull": true
         },
         "suburb_slug": {
           "name": "suburb_slug",
@@ -413,8 +430,15 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {}
+      "foreignKeys": {},
+      "compositePrimaryKeys": {}
     }
   },
-  "enums": {}
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
 }

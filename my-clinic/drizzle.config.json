@@ -1,5 +1,5 @@
 {
-    "dialect": "pg",
-    "out": "./src/migrations",
-    "schema": "./src/data"
-  }
+  "dialect": "pg",
+  "out": "./migrations",
+  "schema": "./src/db/schema"
+}
