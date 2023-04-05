@@ -3,7 +3,7 @@ import { pool } from "../db/connection";
 import { ilike, or, eq } from "drizzle-orm/expressions";
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
 
-class ClinicRepository {
+export class ClinicRepository {
   private db: NodePgDatabase = drizzle(pool);
 
   getAll = async (): Promise<Clinic[]> => {
@@ -76,8 +76,6 @@ class ClinicRepository {
     await this.db
       .update(clinics)
       .set(clinic)
-      .where(eq(clinics.name, clinic.name));
+      .where(eq(clinics.longName, clinic.longName));
   };
 }
-
-export default ClinicRepository;

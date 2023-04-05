@@ -9,12 +9,10 @@ const port = process.env.DB_PORT;
 const user = process.env.DB_USERNAME;
 const password = process.env.DB_PASSWORD;
 
-const pool = new Pool({
+export const pool = new Pool({
   database,
   host,
   port,
   user,
   password,
 });
-
-export { pool };

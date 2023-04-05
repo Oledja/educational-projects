@@ -4,7 +4,6 @@ import { GeocodeResponse } from "../interfaces/GeocodeResponse";
 dotenv.config();
 
 const key = process.env.GEOCODE_API_KEY;
-const url = process.env.GEOCODE_API_URL;
 
 const options: GoogleOptions = {
   provider: "google",

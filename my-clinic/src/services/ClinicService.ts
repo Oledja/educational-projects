@@ -1,5 +1,5 @@
 import { Clinic } from "../db/schema/schema";
-import ClinicRepository from "../repositories/ClinicRepository";
+import { ClinicRepository } from "../repositories/ClinicRepository";
 import { getErrorMessage } from "../utill/getErrorMessage";
 
 class ClinicService {

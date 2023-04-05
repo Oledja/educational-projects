@@ -1,5 +1,5 @@
 import { getPosition } from "../clients/GeocodeClient";
-import ClinicRepository from "../repositories/ClinicRepository";
+import { ClinicRepository } from "../repositories/ClinicRepository";
 
 const clinicsRepository = new ClinicRepository();
 

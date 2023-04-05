@@ -6,19 +6,12 @@ import "reflect-metadata";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { pool } from "./db/connection";
-import https from "https";
-import { readFileSync } from "fs";
 
 dotenv.config();
 
 const port = process.env.APP_PORT;
-const certPath = process.env.CERT_PATH;
-const keyPath = process.env.KEY_PATH;
-const certificate = readFileSync(certPath);
-const privateKey = readFileSync(keyPath);
-const credentials = { key: privateKey, cert: certificate };
+
 const app = express();
-const httpsServer = https.createServer(credentials, app);
 
 app.all("*", (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -36,8 +29,7 @@ app.use(
 );
 app.set("trust proxy", true);
 app.use("/api/v1", clinicRouter);
-
-httpsServer.listen(port, async () => {
+app.listen(port, async () => {
   const db = drizzle(pool);
   await migrate(db, { migrationsFolder: "./migrations" });
   console.log(`Server started on port ${port}`);

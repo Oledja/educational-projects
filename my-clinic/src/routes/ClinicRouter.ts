@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ClinicController from "../controllers/ClinicController";
+import { ClinicController } from "../controllers/ClinicController";
 
 const clinicRouter = Router();
 const clinicController = new ClinicController();

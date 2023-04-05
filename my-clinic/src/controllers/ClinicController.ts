@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import ClinicService from "../services/ClinicService";
 import { getErrorMessage } from "../utill/getErrorMessage";
 
-class ClinicController {
+export class ClinicController {
   private clinicService = new ClinicService();
   getAll = async (req: Request, res: Response) => {
     try {
@@ -84,5 +84,3 @@ class ClinicController {
     }
   };
 }
-
-export default ClinicController;
