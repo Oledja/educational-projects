@@ -1,11 +1,11 @@
 import {
-  APIGatewayEvent,
+  APIGatewayProxyEvent,
   APIGatewayProxyHandler,
   APIGatewayProxyResult,
 } from "aws-lambda";
 import middy from "@middy/core";
-import { reqParamValidate } from "./reqParamValidate";
-import { errorHandler } from "./errorHandler";
+import { reqParamValidate } from "./reqParamValidate.js";
+import { errorHandler } from "./errorHandler.js";
 import * as Joi from "joi";
 
 const schema: Joi.StringSchema = Joi.string()
@@ -23,7 +23,7 @@ function buildResponse(statusCode: number, body: string) {
 }
 
 const hello = async (
-  event: APIGatewayEvent
+  event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   const { name } = event.queryStringParameters;
   const response = buildResponse(200, `Hello ${name}`);

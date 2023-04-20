@@ -1,14 +1,14 @@
-import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import middy from "@middy/core";
 import * as Joi from "joi";
 import * as boom from "@hapi/boom";
 
 export function reqParamValidate(
   schema: Joi.Schema
-): middy.MiddlewareObj<APIGatewayEvent, APIGatewayProxyResult> {
+): middy.MiddlewareObj<APIGatewayProxyEvent, APIGatewayProxyResult> {
   return {
     before: async (
-      handler: middy.Request<APIGatewayEvent, APIGatewayProxyResult>
+      handler: middy.Request<APIGatewayProxyEvent, APIGatewayProxyResult>
     ): Promise<void> => {
       const value: string | undefined =
         handler.event.queryStringParameters?.name;

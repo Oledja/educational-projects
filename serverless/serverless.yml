@@ -1,8 +1,23 @@
 service: serverless
+frameworkVersion: "3"
+
+plugins:
+  - serverless-webpack
+
+package:
+  patterns:
+    - "!*.ts"
+    - "!.eslintrc.cjs"
+    - "handler.js"
+    - "errorHandler.js"
+    - "reqParamValidate.js"
+    - "node_modules/@middy"
+    - "node_modules/joi"
+    - "node_modules/@hapi"
 
 provider:
   name: aws
-  runtime: nodejs16.x
+  runtime: nodejs18.x
   region: us-east-1
 
 functions:
