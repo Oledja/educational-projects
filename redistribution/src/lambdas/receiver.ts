@@ -4,11 +4,11 @@ import { dataSource } from "../database/DBConnection";
 import { Store } from "../entity/store";
 import { User } from "../entity/user";
 
-const receiver = async (event: SQSEvent) => {
-  const body: MyRequestBody = JSON.parse(event.Records[0].body);
+export const receiver = async (event: SQSEvent) => {
+  const body = JSON.parse(event.Records[0].body) as MyRequestBody;
   const { storeToken, username, password } = body;
-  await dataSource.initialize();
   try {
+    await dataSource.initialize();
     const store: Store = await dataSource.getRepository(Store).findOne({
       where: {
         token: storeToken,
@@ -23,5 +23,3 @@ const receiver = async (event: SQSEvent) => {
     await dataSource.destroy();
   }
 };
-
-export { receiver };

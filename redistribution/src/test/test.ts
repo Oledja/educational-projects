@@ -1,5 +1,13 @@
 import http from "k6/http";
-const tokens: string[] = ["ROZETKA", "MOYO", "COMFY", "FOXTROT", "ELDORADO", "FAKE_STORE"];
+
+const tokens: string[] = [
+  "ROZETKA",
+  "MOYO",
+  "COMFY",
+  "FOXTROT",
+  "ELDORADO",
+  "FAKE_STORE",
+];
 
 const names: string[] = [
   "Allen",
@@ -65,27 +73,26 @@ const generatePassword = (): string => {
 const randomStoreToken = (): string => tokens[getRandomNumber(0, 5)];
 const randomName = (): string => names[getRandomNumber(0, names.length - 1)];
 
-  
-export let options = {
-    duration: "3s",
-    vus: 300
-}
+export const options = {
+  duration: "3s",
+  vus: 300,
+};
 
 export default () => {
-    const url = 'https://rj77zce3xj.execute-api.us-east-1.amazonaws.com/dev/api/v1/redistribution';
-    const payload = JSON.stringify({
-      storeToken: randomStoreToken(),
-      username: randomName(),
-      password: generatePassword(),
-    });
-  
-    const params = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  
-    const resp = http.post(url, payload, params);
-    console.log(resp.error_code);
-}
+  const url =
+    "https://rj77zce3xj.execute-api.us-east-1.amazonaws.com/dev/api/v1/redistribution";
+  const payload = JSON.stringify({
+    storeToken: randomStoreToken(),
+    username: randomName(),
+    password: generatePassword(),
+  });
 
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  const resp = http.post(url, payload, params);
+  console.log(resp.error_code);
+};

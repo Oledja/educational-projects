@@ -22,5 +22,11 @@ module.exports = {
   target: "node",
   module: {
     rules: [{ test: /\.tsx?$/, loader: "ts-loader" }],
+    exclude: [
+      [
+        path.resolve(__dirname, ".serverless"),
+        path.resolve(__dirname, ".webpack"),
+      ],
+    ],
   },
 };

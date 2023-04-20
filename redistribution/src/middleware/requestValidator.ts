@@ -11,11 +11,11 @@ const requestValidator = (): middy.MiddlewareObj<
   const before: middy.MiddlewareFn<APIGatewayEvent<MyRequestBody>> = async (
     request
   ): Promise<void> => {
-    await dataSource.initialize();
     const {
       body: { storeToken },
     } = request.event;
     try {
+      await dataSource.initialize();
       await dataSource.transaction("SERIALIZABLE", async (em) => {
         const store = await em.findOne(Store, {
           where: {
@@ -23,7 +23,9 @@ const requestValidator = (): middy.MiddlewareObj<
           },
         });
         if (!store)
-          throw boom.badRequest(`Store with token ${storeToken} doesn't exist`);
+          throw boom.badRequest(
+            `Store with token: <${storeToken}> doesn't exist`
+          );
         const counter = await em.findOne(Counter, {
           where: {
             id: store.id,

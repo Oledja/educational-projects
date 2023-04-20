@@ -1,13 +1,13 @@
 import { Headers } from "aws-sdk/clients/cloudfront";
 import { APIGatewayEventRequestContextV2 } from "aws-lambda";
 
-interface MyRequestBody {
+export interface MyRequestBody {
   password: string;
   storeToken: string;
   username: string;
 }
 
-interface APIGatewayEvent<TBody> {
+export interface APIGatewayEvent<TBody> {
   body: TBody;
   headers: Headers;
   httpMethod: string;
@@ -21,5 +21,3 @@ interface APIGatewayEvent<TBody> {
   resource: string;
   stageVariables: { [name: string]: string } | null;
 }
-
-export { APIGatewayEvent, MyRequestBody };
