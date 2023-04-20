@@ -22,7 +22,7 @@ function buildResponse(statusCode: number, body: string) {
   };
 }
 
-const hello = async (
+const helloName = async (
   event: APIGatewayEvent
 ): Promise<APIGatewayProxyResult> => {
   const { name } = event.queryStringParameters;
@@ -30,20 +30,20 @@ const hello = async (
   return response;
 };
 
-export async function fibonacchi(): Promise<APIGatewayProxyResult> {
-  const fib = (n: number): number => {
+export async function fibonacci(): Promise<APIGatewayProxyResult> {
+  const f = (n: number): number => {
     if (n === 0) return 0;
     if (n === 1) return 1;
-    return fib(n - 2) + fib(n - 1);
+    return f(n - 2) + f(n - 1);
   };
   const result: number[] = [];
   for (let i = 0; i <= 10; i++) {
-    result.push(fib(i));
+    result.push(f(i));
   }
   const response = buildResponse(200, result.join(","));
   return response;
 }
 
-export const helloName: APIGatewayProxyHandler = middy(hello)
+export const hello: APIGatewayProxyHandler = middy(helloName)
   .use(reqParamValidate(schema))
   .use(errorHandler());

@@ -1,19 +1,23 @@
 service: getting-started
+frameworkVersion: "3"
+
+plugins:
+  - serverless-webpack
 
 provider:
   name: aws
-  runtime: nodejs16.x
+  runtime: nodejs18.x
   region: us-east-1
 
 functions:
   hello:
-    handler: handler.helloName
+    handler: handler.hello
     events:
       - http:
           method: get
           path: hello
   fibonacci:
-    handler: handler.fibonacchi
+    handler: handler.fibonacci
     events:
       - http:
           method: get

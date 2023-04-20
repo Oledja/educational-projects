@@ -1,4 +1,4 @@
-node_modules/
-.env
 .serverless
-.webpack
+node_modules
+.build
+.vscode
