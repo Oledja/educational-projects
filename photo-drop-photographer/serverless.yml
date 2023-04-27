@@ -1,0 +1,64 @@
+service: photod-drop-app
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-webpack
+  - serverless-plugin-layer-manager
+
+custom:
+  webpack:
+    packagerOptions:
+      scripts:
+        - npm install --arch=x64 --platform=linux sharp
+
+useDotenv: true
+
+package:
+  patterns:
+    - "!migrations/**"
+    - "!node_modules/serverless/**"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ${env:REGION}
+  environment:
+    S3_INVOCATION_URL: !Ref ImagesBucket
+
+  iam:
+    role:
+      name: photoDropRole
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:PutObject*"
+            - "s3:PutObjectAcl*"
+            - "s3:GetObject*"
+            - "s3:GetObjectAcl*"
+          Resource:
+            - "arn:aws:s3:::${env:AWS_S3_BUCKET_NAME}/*"
+            - "arn:aws:s3:::${env:AWS_S3_BUCKET_NAME}"
+# layers:
+#   lib:
+#     path: node_modules/sharp
+
+functions:
+  photoHandler:
+    handler: src/lambdas/photoHandler.photoHandler
+    events:
+      - s3:
+          bucket: ${env:AWS_S3_BUCKET_NAME}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: ${env:LARGE_PHOTO_S3_FOLDER}/
+          existing: true
+          forceDeploy: true
+    # layers:
+    #   - { Ref: LibLambdaLayer }
+
+resources:
+  Resources:
+    ImagesBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:AWS_S3_BUCKET_NAME}
