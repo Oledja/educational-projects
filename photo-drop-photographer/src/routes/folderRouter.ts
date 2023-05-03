@@ -24,6 +24,6 @@ folderRouter.post(
 );
 folderRouter.put("/folders/:id", auth, folderController.updateFolder);
 folderRouter.delete("/folders/:id", auth, folderController.deleteFolder);
-folderRouter.delete("/folders/photos/:id", folderController.deletePhoto);
+folderRouter.delete("/folders/photos/:id", auth, folderController.deletePhoto);
 
 export { folderRouter };

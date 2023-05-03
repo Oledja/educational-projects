@@ -105,9 +105,11 @@ export class PhotoService {
   deletePhoto = async (photoId: string) => {
     try {
       const { link } = await this.photoRepository.getPhoto(photoId);
-      const markedUsers = await this.userService.getMarketUsers(photoId);
-      markedUsers.forEach(
-        async (user) => await this.unmarkUserOnPhoto(user.id, photoId)
+      const markedUsers = await this.userService.getMarkedUsers(photoId);
+      await Promise.all(
+        markedUsers.map(
+          async (user) => await this.unmarkUserOnPhoto(user.id, photoId)
+        )
       );
       await this.photoRepository.deletePhoto(photoId);
       const keys: string[] = [
@@ -126,6 +128,8 @@ export class PhotoService {
     try {
       await this.photoRepository.markUserOnPhoto(userId, photoId);
     } catch (err) {
+      console.log(err);
+
       throw new Error(
         getErrorMessage(
           `User with id: <${userId}> already marked on the photo with id: <${photoId}>`

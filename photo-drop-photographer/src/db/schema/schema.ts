@@ -1,5 +1,5 @@
 import { InferModel } from "drizzle-orm";
-import { date, primaryKey, varchar } from "drizzle-orm/pg-core";
+import { date, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core";
 import { pgTable, uuid, uniqueIndex, boolean } from "drizzle-orm/pg-core";
 
 export const photographers = pgTable(
@@ -20,7 +20,7 @@ export const folders = pgTable("folders", {
   id: uuid("id").defaultRandom().primaryKey().notNull(),
   name: varchar("name").notNull(),
   location: varchar("location").notNull(),
-  date: date("date"),
+  date: date("date").notNull(),
   photographerId: uuid("photographerId")
     .references(() => photographers.id)
     .notNull(),
@@ -41,6 +41,8 @@ export const users = pgTable(
     selfie: varchar("selfie"),
     phone: varchar("phone").notNull(),
     email: varchar("email"),
+    verificationCode: varchar("verificationCode").notNull(),
+    codeGenerationTime: timestamp("codeGeneraitonTime").notNull(),
   },
   (users) => ({ phoneIdx: uniqueIndex("userPhoneIdx").on(users.phone) })
 );
@@ -54,7 +56,7 @@ export const usersPhotos = pgTable(
     photoId: uuid("photoId")
       .notNull()
       .references(() => photos.id),
-    isBuyed: boolean("isBuyed").default(false),
+    isUnlocked: boolean("isBuyed").default(false).notNull(),
   },
   (usersPhotos) => ({
     cpk: primaryKey(usersPhotos.userId, usersPhotos.photoId),

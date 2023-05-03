@@ -4,12 +4,10 @@ import { PhotographerRepository } from "../repositories/PhotographerRepository";
 import { getErrorMessage } from "../utils/getErrorMessage";
 import { LoginRequest } from "../types/dto/photographer/LoginRequest";
 import { generateAccessToken } from "../utils/tokenGenerator";
-import { FolderService } from "./FolderService";
 import { LoginResponse } from "../types/dto/photographer/LoginResponse";
 
 export class RegistrationService {
   private photographerRepository = new PhotographerRepository();
-  private folderService = new FolderService();
 
   registration = async (
     photographer: CreatePhotographerDTO
@@ -30,10 +28,8 @@ export class RegistrationService {
         if (photographer.password !== password) throw new Error();
         const { id } = photographer;
         const token = generateAccessToken(id, login);
-        const folders = await this.folderService.getFoldersByPhotographerId(id);
         return {
           photographer,
-          folders,
           accessToken: token,
         };
       } catch (err) {

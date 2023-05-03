@@ -81,7 +81,7 @@ export class FolderService {
     try {
       const photos = await this.photoService.getPhotosByFolderId(folderId);
       const photosId = photos.map((photo) => photo.id);
-      await Promise.all(photosId.map(await this.photoService.deletePhoto));
+      await Promise.all(photosId.map(this.photoService.deletePhoto));
       await this.folderRepository.deleteFolder(folderId);
     } catch (err) {
       throw new Error(getErrorMessage(err));

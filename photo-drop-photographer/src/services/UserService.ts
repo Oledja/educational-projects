@@ -22,7 +22,7 @@ export class UserService {
     }
   };
 
-  getMarketUsers = async (photoId: string): Promise<ResponseUserDTO[]> => {
+  getMarkedUsers = async (photoId: string): Promise<ResponseUserDTO[]> => {
     try {
       const result = await this.userRepository.getMarkedUsers(photoId);
       const usersId = result.map((r) => r.userId);

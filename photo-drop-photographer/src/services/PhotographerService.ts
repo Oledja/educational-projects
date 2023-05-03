@@ -54,10 +54,12 @@ export class PhotographerService {
   deletePhotographer = async (id: string) => {
     try {
       const folders = await this.folderService.getFoldersByPhotographerId(id);
-      folders.forEach((folder) => {
-        const { id } = folder;
-        this.folderService.deleteFolder(id);
-      });
+      await Promise.all(
+        folders.map(async (folder) => {
+          const { id } = folder;
+          await this.folderService.deleteFolder(id);
+        })
+      );
       await this.photographerRepository.deletePhotographer(id);
     } catch (err) {
       throw new Error(getErrorMessage(err));

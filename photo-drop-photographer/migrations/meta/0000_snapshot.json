@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "44c92109-f275-4be9-8c8e-9e6bf969048a",
+  "id": "a965044c-526e-460b-b648-c8919444f286",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "folders": {
@@ -21,12 +21,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "icon": {
-          "name": "icon",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "location": {
           "name": "location",
           "type": "varchar",
@@ -37,7 +31,7 @@
           "name": "date",
           "type": "date",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "photographerId": {
           "name": "photographerId",
@@ -182,6 +176,18 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
+        },
+        "verificationCode": {
+          "name": "verificationCode",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "codeGeneraitonTime": {
+          "name": "codeGeneraitonTime",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {
@@ -216,7 +222,7 @@
           "name": "isBuyed",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": false
         }
       },

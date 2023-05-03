@@ -26,7 +26,7 @@ export class UserController {
   ) => {
     try {
       const { id: photoId } = req.params;
-      const response = await this.userService.getMarketUsers(photoId);
+      const response = await this.userService.getMarkedUsers(photoId);
       res.status(200).json(response);
     } catch (err) {
       res.status(200).json(getErrorMessage(err));

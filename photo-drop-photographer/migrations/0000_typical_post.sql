@@ -1,9 +1,8 @@
 CREATE TABLE IF NOT EXISTS "folders" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar NOT NULL,
-	"icon" varchar,
 	"location" varchar NOT NULL,
-	"date" date,
+	"date" date NOT NULL,
 	"photographerId" uuid NOT NULL
 );
 
@@ -25,13 +24,15 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"selfie" varchar,
 	"phone" varchar NOT NULL,
-	"email" varchar
+	"email" varchar,
+	"verificationCode" varchar NOT NULL,
+	"codeGeneraitonTime" timestamp NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "usersPhotos" (
 	"userId" uuid NOT NULL,
 	"photoId" uuid NOT NULL,
-	"isBuyed" boolean DEFAULT false
+	"isBuyed" boolean DEFAULT false NOT NULL
 );
 ALTER TABLE "usersPhotos" ADD CONSTRAINT "usersPhotos_userId_photoId" PRIMARY KEY("userId","photoId");
 
