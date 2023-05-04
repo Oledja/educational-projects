@@ -1,13 +1,11 @@
 import { PhotographerService } from "../services/PhotographerService";
 import { Request, Response } from "express";
 import { getErrorMessage } from "../utils/getErrorMessage";
-import {
-  RequestWithParams,
-  RequestWithParamsAndBody,
-} from "../types/customRequests";
+import { RequestWithParams } from "../types/customRequests";
 import { ResponsePhotographerDTO } from "../types/dto/photographer/ResponsePhotographerDTO";
 import { UpdatePhotographerDTO } from "../types/dto/photographer/UpdatePhotographerDTO";
 import { ParamsId } from "../types/ParamsId";
+import { CustomRequest } from "../interfaces/CustomRequest";
 
 export class PhotographerController {
   private photographerService = new PhotographerService();
@@ -36,12 +34,9 @@ export class PhotographerController {
     }
   };
 
-  updatePhotographer = async (
-    req: RequestWithParamsAndBody<ParamsId, UpdatePhotographerDTO>,
-    res: Response
-  ) => {
+  updatePhotographer = async (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
+      const { id } = req as CustomRequest;
       const update: UpdatePhotographerDTO = req.body;
       await this.photographerService.updatePhotographer(id, update);
       res

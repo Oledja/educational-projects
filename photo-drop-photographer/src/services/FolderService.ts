@@ -1,5 +1,6 @@
 import { FolderRepository } from "../repositories/FolderRepository";
 import { CreateFolderDTO } from "../types/dto/folder/CreateFolderDTO";
+import { RequestCreateFolder } from "../types/dto/folder/RequestCreateFolder";
 import { ResponseFolderDTO } from "../types/dto/folder/ResponseFolderDTO";
 import { ResponseFolderWithPhotosDTO } from "../types/dto/folder/ResponseFolderWithPhotosDTO";
 import { UpdateFolderDTO } from "../types/dto/folder/UpdateFolderDTO";
@@ -60,9 +61,17 @@ export class FolderService {
   };
 
   createFolder = async (
-    create: CreateFolderDTO
+    photographerId: string,
+    folder: RequestCreateFolder
   ): Promise<ResponseFolderDTO> => {
     try {
+      const { name, location, date } = folder;
+      const create: CreateFolderDTO = {
+        name,
+        location,
+        date,
+        photographerId,
+      };
       return await this.folderRepository.createFolder(create);
     } catch (err) {
       throw new Error(getErrorMessage(err));

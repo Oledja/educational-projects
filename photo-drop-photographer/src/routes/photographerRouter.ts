@@ -14,13 +14,12 @@ photographerRouter.get(
   photographerController.getPhotographers
 );
 photographerRouter.put(
-  "/photographers/:id",
+  "/photographers",
   auth,
   photographerController.updatePhotographer
 );
 photographerRouter.delete(
   "/photographers/:id",
-  auth,
   photographerController.deletePhotographer
 );
 

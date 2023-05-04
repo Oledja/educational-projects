@@ -1,6 +1,5 @@
 import { FolderService } from "../services/FolderService";
 import {
-  RequestWithBody,
   RequestWithParams,
   RequestWithParamsAndBody,
 } from "../types/customRequests";
@@ -9,9 +8,11 @@ import { CreateFolderDTO } from "../types/dto/folder/CreateFolderDTO";
 import { ResponseFolderDTO } from "../types/dto/folder/ResponseFolderDTO";
 import { UpdateFolderDTO } from "../types/dto/folder/UpdateFolderDTO";
 import { getErrorMessage } from "../utils/getErrorMessage";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { ResponseFolderWithPhotosDTO } from "../types/dto/folder/ResponseFolderWithPhotosDTO";
 import { PhotoService } from "../services/PhotoService";
+import { CustomRequest } from "../interfaces/CustomRequest";
+import { RequestCreateFolder } from "../types/dto/folder/RequestCreateFolder";
 
 export class FolderController {
   private folderService = new FolderService();
@@ -31,11 +32,13 @@ export class FolderController {
   };
 
   getPhotographerFolders = async (
-    req: RequestWithParams<ParamsId>,
+    req: Request,
     res: Response<ResponseFolderDTO[] | string>
   ) => {
     try {
-      const { id } = req.params;
+      const { id } = req as CustomRequest;
+      console.log(id);
+
       const response = await this.folderService.getFoldersByPhotographerId(id);
       res.status(200).json(response);
     } catch (err) {
@@ -44,12 +47,13 @@ export class FolderController {
   };
 
   createFolder = async (
-    req: RequestWithBody<CreateFolderDTO>,
+    req: Request,
     res: Response<ResponseFolderDTO | string>
   ) => {
     try {
-      const create: CreateFolderDTO = req.body;
-      const response = await this.folderService.createFolder(create);
+      const { id } = req as CustomRequest;
+      const create: RequestCreateFolder = req.body;
+      const response = await this.folderService.createFolder(id, create);
       res.status(200).json(response);
     } catch (err) {
       res.status(500).json(getErrorMessage(err));

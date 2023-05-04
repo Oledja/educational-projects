@@ -10,11 +10,7 @@ const folderRouter = Router();
 const folderController = new FolderController();
 
 folderRouter.get("/folders/:id", auth, folderController.getFolder);
-folderRouter.get(
-  "/folders/photographers/:id",
-  auth,
-  folderController.getPhotographerFolders
-);
+folderRouter.get("/folders", auth, folderController.getPhotographerFolders);
 folderRouter.post("/folders", auth, folderController.createFolder);
 folderRouter.post(
   "/folders/photos/:id",
