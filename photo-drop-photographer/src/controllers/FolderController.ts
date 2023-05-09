@@ -37,8 +37,6 @@ export class FolderController {
   ) => {
     try {
       const { id } = req as CustomRequest;
-      console.log(id);
-
       const response = await this.folderService.getFoldersByPhotographerId(id);
       res.status(200).json(response);
     } catch (err) {

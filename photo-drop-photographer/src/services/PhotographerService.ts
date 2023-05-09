@@ -24,11 +24,13 @@ export class PhotographerService {
     }
   };
 
-  getPhotographer = async (id: string): Promise<Photographer> => {
+  getPhotographer = async (
+    photographerId: Photographer["id"]
+  ): Promise<Photographer> => {
     try {
-      return await this.photographerRepository.getPhotographer(id);
+      return await this.photographerRepository.getPhotographer(photographerId);
     } catch (err) {
-      throw new Error(`Photographer with id: <${id}> doesn't exists`);
+      throw new Error(getErrorMessage(err));
     }
   };
 
@@ -41,26 +43,31 @@ export class PhotographerService {
   };
 
   updatePhotographer = async (
-    id: string,
-    photographer: UpdatePhotographerDTO
+    photographerId: Photographer["id"],
+    update: UpdatePhotographerDTO
   ) => {
     try {
-      await this.photographerRepository.updatePhotographer(id, photographer);
+      await this.photographerRepository.updatePhotographer(
+        photographerId,
+        update
+      );
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
   };
 
-  deletePhotographer = async (id: string) => {
+  deletePhotographer = async (photographerId: Photographer["id"]) => {
     try {
-      const folders = await this.folderService.getFoldersByPhotographerId(id);
+      const folders = await this.folderService.getFoldersByPhotographerId(
+        photographerId
+      );
       await Promise.all(
         folders.map(async (folder) => {
           const { id } = folder;
           await this.folderService.deleteFolder(id);
         })
       );
-      await this.photographerRepository.deletePhotographer(id);
+      await this.photographerRepository.deletePhotographer(photographerId);
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }

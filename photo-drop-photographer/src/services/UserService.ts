@@ -1,3 +1,4 @@
+import { Photo } from "../db/schema/schema";
 import { UserRepository } from "../repositories/UserRepository";
 import { ResponseUserDTO } from "../types/dto/user/ResponseUserDTO";
 import { getErrorMessage } from "../utils/getErrorMessage";
@@ -22,7 +23,7 @@ export class UserService {
     }
   };
 
-  getMarkedUsers = async (photoId: string): Promise<ResponseUserDTO[]> => {
+  getMarkedUsers = async (photoId: Photo["id"]): Promise<ResponseUserDTO[]> => {
     try {
       const result = await this.userRepository.getMarkedUsers(photoId);
       const usersId = result.map((r) => r.userId);

@@ -1,29 +1,32 @@
 import sharp from "sharp";
-import * as dotenv from "dotenv";
 
-dotenv.config();
+export class PhotoUtils {
+  private width: number;
+  private height: number;
 
-export const addWatermark = (
-  imgBuffer: Buffer,
-  watermark: Buffer
-): Promise<Buffer> => {
-  return sharp(imgBuffer)
-    .composite([{ input: watermark }])
-    .png()
-    .toBuffer();
-};
+  constructor(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+  }
+  addWatermark = (imgBuffer: Buffer, watermark: Buffer): Promise<Buffer> => {
+    return sharp(imgBuffer)
+      .composite([{ input: watermark }])
+      .png()
+      .toBuffer();
+  };
 
-export const resize = async (imgBuffer: Buffer): Promise<Buffer> => {
-  return sharp(imgBuffer).resize(400, 400).png().toBuffer();
-};
+  resize = async (imgBuffer: Buffer): Promise<Buffer> => {
+    return sharp(imgBuffer).resize(this.width, this.height).png().toBuffer();
+  };
 
-export const resizeAndAddWatermark = (
-  imgBuffer: Buffer,
-  watermark: Buffer
-): Promise<Buffer> => {
-  return sharp(imgBuffer)
-    .resize(400, 400)
-    .composite([{ input: watermark }])
-    .png()
-    .toBuffer();
-};
+  resizeAndAddWatermark = (
+    imgBuffer: Buffer,
+    watermark: Buffer
+  ): Promise<Buffer> => {
+    return sharp(imgBuffer)
+      .resize(this.width, this.height)
+      .composite([{ input: watermark }])
+      .png()
+      .toBuffer();
+  };
+}

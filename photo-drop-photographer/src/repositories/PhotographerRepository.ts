@@ -9,21 +9,25 @@ export class PhotographerRepository {
   private db: NodePgDatabase = drizzle(pool);
 
   getPhotographer = async (photographerId: string): Promise<Photographer> => {
-    const result = await this.db
+    const [result] = await this.db
       .select()
       .from(photographers)
       .where(eq(photographers.id, photographerId));
-    if (result.length === 0) throw new Error();
-    return result[0];
+    if (!result)
+      throw new Error(
+        `Photographer with id: <${photographerId}> doesn't exists`
+      );
+    return result;
   };
 
   getPhotographerByLogin = async (login: string): Promise<Photographer> => {
-    const result = await this.db
+    const [result] = await this.db
       .select()
       .from(photographers)
       .where(eq(photographers.login, login));
-    if (result.length === 0) throw new Error();
-    return result[0];
+    if (!result)
+      throw new Error(`Photographer with login: <${login}> doesn't exists`);
+    return result;
   };
 
   getPhotographers = async (): Promise<Photographer[]> => {
@@ -33,12 +37,12 @@ export class PhotographerRepository {
   createPhotographer = async (
     create: CreatePhotographerDTO
   ): Promise<Photographer> => {
-    const result = await this.db
+    const [result] = await this.db
       .insert(photographers)
       .values(create)
       .returning();
-    if (result.length === 0) throw new Error("Filed save");
-    return result[0];
+    if (!result) throw new Error("Saving failed");
+    return result;
   };
 
   updatePhotographer = async (

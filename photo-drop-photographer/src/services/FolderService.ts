@@ -1,24 +1,20 @@
+import { Folder, Photographer } from "../db/schema/schema";
 import { FolderRepository } from "../repositories/FolderRepository";
 import { CreateFolderDTO } from "../types/dto/folder/CreateFolderDTO";
 import { RequestCreateFolder } from "../types/dto/folder/RequestCreateFolder";
 import { ResponseFolderDTO } from "../types/dto/folder/ResponseFolderDTO";
 import { ResponseFolderWithPhotosDTO } from "../types/dto/folder/ResponseFolderWithPhotosDTO";
 import { UpdateFolderDTO } from "../types/dto/folder/UpdateFolderDTO";
+import { getFolderEnv } from "../utils/envUtils";
 import { getErrorMessage } from "../utils/getErrorMessage";
 import { PhotoService } from "./PhotoService";
-import * as dotenv from "dotenv";
-
-dotenv.config();
-
-const largePhotoFolder = process.env.LARGE_PHOTO_S3_FOLDER;
-const iconPhotoFolder = process.env.ICON_PHOTO_S3_FOLDER;
 
 export class FolderService {
   private folderRepository = new FolderRepository();
   private photoService = new PhotoService();
 
   getFolder = async (
-    folderId: string
+    folderId: Folder["id"]
   ): Promise<ResponseFolderWithPhotosDTO> => {
     try {
       const folder = await this.folderRepository.getFolder(folderId);
@@ -28,11 +24,11 @@ export class FolderService {
           const { id, link } = photo;
           const largePhotoUrl = await this.photoService.getPhotoUrl(
             link,
-            largePhotoFolder
+            getFolderEnv("LARGE_PHOTO_S3_FOLDER")
           );
           const iconPhotoUrl = await this.photoService.getPhotoUrl(
             link,
-            iconPhotoFolder
+            getFolderEnv("ICON_PHOTO_S3_FOLDER")
           );
           return {
             id,
@@ -51,7 +47,7 @@ export class FolderService {
   };
 
   getFoldersByPhotographerId = async (
-    photographerId: string
+    photographerId: Photographer["id"]
   ): Promise<ResponseFolderDTO[]> => {
     try {
       return await this.folderRepository.getPhotographerFolders(photographerId);
@@ -61,7 +57,7 @@ export class FolderService {
   };
 
   createFolder = async (
-    photographerId: string,
+    photographerId: Photographer["id"],
     folder: RequestCreateFolder
   ): Promise<ResponseFolderDTO> => {
     try {
@@ -78,7 +74,7 @@ export class FolderService {
     }
   };
 
-  updateFolder = async (folderId: string, update: UpdateFolderDTO) => {
+  updateFolder = async (folderId: Folder["id"], update: UpdateFolderDTO) => {
     try {
       await this.folderRepository.updateFolder(folderId, update);
     } catch (err) {
@@ -86,7 +82,7 @@ export class FolderService {
     }
   };
 
-  deleteFolder = async (folderId: string) => {
+  deleteFolder = async (folderId: Folder["id"]) => {
     try {
       const photos = await this.photoService.getPhotosByFolderId(folderId);
       const photosId = photos.map((photo) => photo.id);
