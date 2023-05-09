@@ -6,21 +6,28 @@ import { eq } from "drizzle-orm";
 export class PhotoRepository {
   private db: NodePgDatabase = drizzle(pool);
 
-  getPhoto = async (id: string): Promise<Photo> => {
-    const result = await this.db.select().from(photos).where(eq(photos.id, id));
-    if (result.length === 0)
-      throw new Error(`Photo with id: <${id}> doesn't exists`);
-    return result[0];
+  getPhoto = async (photoId: Photo["id"]): Promise<Photo> => {
+    const [result] = await this.db
+      .select()
+      .from(photos)
+      .where(eq(photos.id, photoId));
+    if (!result) throw new Error(`Photo with id: <${photoId}> doesn't exists`);
+    return result;
   };
 
-  getUserPhotos = async (userId: string): Promise<UsersPhotos[]> => {
+  getUserPhotos = async (
+    userId: UsersPhotos["userId"]
+  ): Promise<UsersPhotos[]> => {
     return await this.db
       .select()
       .from(usersPhotos)
       .where(eq(usersPhotos.userId, userId));
   };
 
-  unlockPhoto = async (userId: string, photoId: string) => {
+  unlockPhoto = async (
+    userId: UsersPhotos["userId"],
+    photoId: UsersPhotos["photoId"]
+  ) => {
     await this.db
       .update(usersPhotos)
       .set({ isUnlocked: true })
@@ -29,7 +36,7 @@ export class PhotoRepository {
       );
   };
 
-  unmarkUserOnPhotos = async (userId: string) => {
+  unmarkUserOnPhotos = async (userId: UsersPhotos["userId"]) => {
     await this.db.delete(usersPhotos).where(eq(usersPhotos.userId, userId));
   };
 }

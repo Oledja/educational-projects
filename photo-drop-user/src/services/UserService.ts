@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { PutObjectRequest } from "aws-sdk/clients/s3";
 import { S3Service } from "./S3Service";
 import { ResponseUserDTO } from "../dto/user/ResponseUserDTO";
+import { User } from "../db/schema/schema";
 
 dotenv.config();
 
@@ -18,9 +19,9 @@ export class UserService {
   private photoService = new PhotoService();
   private s3Service = new S3Service();
 
-  getUser = async (id: string): Promise<ResponseUserDTO> => {
+  getUser = async (userId: User["id"]): Promise<ResponseUserDTO> => {
     try {
-      const user = await this.userRepository.getUser(id);
+      const user = await this.userRepository.getUser(userId);
       if (user.selfie) {
         const selfieKey = `${selfieFolder}/${user.selfie}`;
         const selfieUrl = await this.s3Service.getPhotoUrl(selfieKey);
@@ -29,6 +30,7 @@ export class UserService {
       return {
         id: user.id,
         selfie: user.selfie,
+        name: user.name,
         phone: user.phone,
         email: user.email,
       };
@@ -37,15 +39,15 @@ export class UserService {
     }
   };
 
-  updateUser = async (id: string, update: UpdateUserDTO) => {
+  updateUser = async (userId: User["id"], update: UpdateUserDTO) => {
     try {
-      const user = await this.userRepository.updateUser(id, update);
+      await this.userRepository.updateUser(userId, update);
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
   };
 
-  updateUserSelfie = async (id: string, photo: Express.Multer.File) => {
+  updateUserSelfie = async (userId: User["id"], photo: Express.Multer.File) => {
     try {
       const { buffer, originalname } = photo;
       const key = `${uuidv4()}-${originalname}`;
@@ -54,40 +56,40 @@ export class UserService {
         Key: `${selfieFolder}/${key}`,
         Body: buffer,
       };
-      const { selfie } = await this.userRepository.getUser(id);
+      const { selfie } = await this.userRepository.getUser(userId);
       if (selfie) {
         const key = `${selfieFolder}/${selfie}`;
         await this.s3Service.deletePhoto(key);
       }
-      await this.userRepository.updateUser(id, { selfie: key });
+      await this.userRepository.updateUser(userId, { selfie: key });
       await this.s3Service.savePhoto(param);
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
   };
 
-  deleteUserSelfie = async (id: string) => {
+  deleteUserSelfie = async (userId: User["id"]) => {
     try {
-      const { selfie } = await this.userRepository.getUser(id);
+      const { selfie } = await this.userRepository.getUser(userId);
       if (!selfie)
-        throw new Error(`Selfie for user with id: <${id}> was not set`);
+        throw new Error(`Selfie for user with id: <${userId}> was not set`);
       const key = `${selfieFolder}/${selfie}`;
       await this.s3Service.deletePhoto(key);
-      await this.userRepository.updateUser(id, { selfie: null });
+      await this.userRepository.updateUser(userId, { selfie: null });
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
   };
 
-  deleteUser = async (id: string) => {
+  deleteUser = async (userId: User["id"]) => {
     try {
-      const { selfie } = await this.userRepository.getUser(id);
+      const { selfie } = await this.userRepository.getUser(userId);
       if (selfie) {
         const key = `${selfieFolder}/${selfie}`;
         await this.s3Service.deletePhoto(key);
       }
-      await this.photoService.unmarkUserOnPhotos(id);
-      await this.userRepository.deleteUser(id);
+      await this.photoService.unmarkUserOnPhotos(userId);
+      await this.userRepository.deleteUser(userId);
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }

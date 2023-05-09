@@ -1,8 +1,10 @@
 import { sendCode } from "../bot/telegeamBot";
+import { User } from "../db/schema/schema";
 import { LoginResponse } from "../dto/LoginResponse";
 import { CreateUserDTO } from "../dto/user/CreateUserDTO";
 import { UpdateUserDTO } from "../dto/user/UpdateUserDTO";
 import { UserRepository } from "../repositories/UserRepository";
+import { getFolderEnv } from "../utils/envUtils";
 import { getErrorMessage } from "../utils/getErrorMessage";
 import { generateAccessToken } from "../utils/tokenGenerator";
 import {
@@ -16,13 +18,15 @@ dotenv.config();
 
 const codeLength = process.env.VERIFICATION_CODE_LENGTH;
 const chatId = process.env.TELEGRAM_CHAT_ID;
-const selfieFolder = process.env.SELFIE_S3_FOLDER;
 
 export class RegistrationService {
   private userRepository = new UserRepository();
   private s3Service = new S3Service();
 
-  login = async (phone: string, code: string): Promise<LoginResponse> => {
+  login = async (
+    phone: User["phone"],
+    code: User["verificationCode"]
+  ): Promise<LoginResponse> => {
     try {
       const user = await this.userRepository.getUserByPhone(phone);
       if (!user) throw new Error(`User with phone: <${phone}> doesn't exists`);
@@ -33,13 +37,14 @@ export class RegistrationService {
         throw new Error("The provided code has expired");
       await this.userRepository.updateUser(id, { verificationCode: "" });
       if (selfie) {
-        const selfieKey = `${selfieFolder}/${selfie}`;
+        const selfieKey = `${getFolderEnv("SELFIE_S3_FOLDER")}/${selfie}`;
         const selfieUrl = await this.s3Service.getPhotoUrl(selfieKey);
         user.selfie = selfieUrl;
       }
       const responseUser = {
         id: user.id,
         selfie: user.selfie,
+        name: user.name,
         phone: user.phone,
         email: user.email,
       };
@@ -53,7 +58,7 @@ export class RegistrationService {
     }
   };
 
-  verification = async (phone: string) => {
+  verification = async (phone: User["phone"]) => {
     try {
       const user = await this.userRepository.getUserByPhone(phone);
       const code = generateCode(codeLength);

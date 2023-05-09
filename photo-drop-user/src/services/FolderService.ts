@@ -1,4 +1,4 @@
-import { Folder } from "../db/schema/schema";
+import { Folder, User } from "../db/schema/schema";
 import { ResponseFolderDTO } from "../dto/photo/ResponseFolderDTO";
 import { FolderRepository } from "../repositories/FolderRepository";
 import { getErrorMessage } from "../utils/getErrorMessage";
@@ -8,17 +8,17 @@ export class FolderService {
   private folderRepository = new FolderRepository();
   private photoService = new PhotoService();
 
-  getFolder = async (id: string): Promise<Folder> => {
+  getFolder = async (folderId: Folder["id"]): Promise<Folder> => {
     try {
-      return await this.folderRepository.getFolder(id);
+      return await this.folderRepository.getFolder(folderId);
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
   };
 
   getUserFolder = async (
-    userId: string,
-    folderId: string
+    userId: User["id"],
+    folderId: Folder["id"]
   ): Promise<ResponseFolderDTO> => {
     try {
       const allPhotos = await this.photoService.getUserPhotos(userId);
@@ -40,7 +40,7 @@ export class FolderService {
     }
   };
 
-  getUserFolders = async (userId: string): Promise<ResponseFolderDTO[]> => {
+  getUserFolders = async (userId: User["id"]): Promise<ResponseFolderDTO[]> => {
     try {
       const photos = await this.photoService.getUserPhotos(userId);
       const folders = await this.groupPhotoByFolder(photos);

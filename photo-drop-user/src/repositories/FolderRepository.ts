@@ -6,13 +6,13 @@ import { eq } from "drizzle-orm";
 export class FolderRepository {
   private db: NodePgDatabase = drizzle(pool);
 
-  getFolder = async (id: string): Promise<Folder> => {
-    const result = await this.db
+  getFolder = async (folderId: Folder["id"]): Promise<Folder> => {
+    const [result] = await this.db
       .select()
       .from(folders)
-      .where(eq(folders.id, id));
-    if (result.length === 0)
-      throw new Error(`Folder with id: <${id}> doesn't exists`);
-    return result[0];
+      .where(eq(folders.id, folderId));
+    if (!result)
+      throw new Error(`Folder with id: <${folderId}> doesn't exists`);
+    return result;
   };
 }

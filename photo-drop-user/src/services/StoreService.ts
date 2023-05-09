@@ -3,26 +3,26 @@ import { getErrorMessage } from "../utils/getErrorMessage";
 import Stripe from "stripe";
 import * as dotenv from "dotenv";
 import { FolderService } from "./FolderService";
-import { S3Service } from "./S3Service";
+import { Folder, Photo, User } from "../db/schema/schema";
 
 dotenv.config();
 
 const secretKey = process.env.STRIPE_PRIVATE_KEY;
-const iconFolder = process.env.ICON_PHOTO_WITH_WATER_MARK_S3_FOLDER;
 const photoPrice = process.env.PHOTO_PRICE;
+const successUrl = process.env.SUCCESS_URL;
 
 export class StoreService {
   private photoRepository = new PhotoRepository();
   private folderService = new FolderService();
-  private s3Service = new S3Service();
   private stripe = new Stripe(secretKey, { apiVersion: "2022-11-15" });
 
-  buyPhoto = async (userId: string, photoId: string): Promise<string> => {
+  buyPhoto = async (
+    userId: User["id"],
+    photoId: Photo["id"]
+  ): Promise<string> => {
     try {
       const { folderId, link } = await this.photoRepository.getPhoto(photoId);
       const { name } = await this.folderService.getFolder(folderId);
-      const key = `${iconFolder}/${link}`;
-      const photoUrl = await this.s3Service.getPhotoUrl(key);
       const session = await this.stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         mode: "payment",
@@ -32,14 +32,13 @@ export class StoreService {
               currency: "usd",
               product_data: {
                 name: `Folder name: ${name}`,
-                images: [photoUrl],
               },
               unit_amount: photoPrice,
             },
             quantity: 1,
           },
         ],
-        success_url: `http://localhost:5534/api/v1/store/photos/${photoId}/${userId}`,
+        success_url: `${successUrl}${photoId}/${userId}`,
       });
       const { url } = session;
       if (!url) throw new Error(`Problem with payment service`);
@@ -51,7 +50,10 @@ export class StoreService {
     }
   };
 
-  buyFolder = async (userId: string, folderId: string): Promise<string> => {
+  buyFolder = async (
+    userId: User["id"],
+    folderId: Folder["id"]
+  ): Promise<string> => {
     try {
       const { name } = await this.folderService.getFolder(folderId);
       const userPhotos = await this.photoRepository.getUserPhotos(userId);
@@ -89,7 +91,7 @@ export class StoreService {
     }
   };
 
-  unlockPhoto = async (userId: string, photoId: string) => {
+  unlockPhoto = async (userId: User["id"], photoId: Photo["id"]) => {
     try {
       await this.photoRepository.unlockPhoto(userId, photoId);
     } catch (err) {
@@ -97,7 +99,7 @@ export class StoreService {
     }
   };
 
-  unlockFolder = async (userId: string, folderId: string) => {
+  unlockFolder = async (userId: User["id"], folderId: Folder["id"]) => {
     try {
       const userPhotos = await this.photoRepository.getUserPhotos(userId);
       await Promise.all(

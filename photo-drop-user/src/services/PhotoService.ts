@@ -1,22 +1,14 @@
 import { PhotoRepository } from "../repositories/PhotoRepository";
 import { getErrorMessage } from "../utils/getErrorMessage";
-import * as dotenv from "dotenv";
 import { S3Service } from "./S3Service";
-
-dotenv.config();
-
-const largePhotoFolder = process.env.LARGE_PHOTO_S3_FOLDER;
-const largePhotoWithWaterMarkFolder =
-  process.env.LARGE_PHOTO_WITH_WATER_MARK_S3_FOLDER;
-const iconFolder = process.env.ICON_PHOTO_S3_FOLDER;
-const iconWithWaterMarkFolder =
-  process.env.ICON_PHOTO_WITH_WATER_MARK_S3_FOLDER;
+import { Folder, User, UsersPhotos } from "../db/schema/schema";
+import { getFolderEnv } from "../utils/envUtils";
 
 export class PhotoService {
   private photoRepository = new PhotoRepository();
   private s3Service = new S3Service();
 
-  getUserPhotos = async (userId: string): Promise<ResponsePhotoDTO[]> => {
+  getUserPhotos = async (userId: User["id"]): Promise<ResponsePhotoDTO[]> => {
     try {
       const usersPhotos = await this.photoRepository.getUserPhotos(userId);
       return Promise.all(
@@ -27,12 +19,12 @@ export class PhotoService {
           );
 
           let largePhotokey = isUnlocked
-            ? `${largePhotoFolder}/${link}`
-            : `${largePhotoWithWaterMarkFolder}/${link}`;
+            ? `${getFolderEnv("LARGE_PHOTO_S3_FOLDER")}/${link}`
+            : `${getFolderEnv("ICON_PHOTO_WITH_WATER_MARK_S3_FOLDER")}/${link}`;
 
           let iconPhotoKey = isUnlocked
-            ? `${iconFolder}/${link}`
-            : `${iconWithWaterMarkFolder}/${link}`;
+            ? `${getFolderEnv("ICON_PHOTO_S3_FOLDER")}/${link}`
+            : `${getFolderEnv("ICON_PHOTO_WITH_WATER_MARK_S3_FOLDER")}/${link}`;
 
           const largePhotoUrl = await this.s3Service.getPhotoUrl(largePhotokey);
           const iconPhotoUrl = await this.s3Service.getPhotoUrl(iconPhotoKey);
@@ -49,7 +41,10 @@ export class PhotoService {
     }
   };
 
-  unlockPhoto = async (userId: string, photoId: string) => {
+  unlockPhoto = async (
+    userId: UsersPhotos["userId"],
+    photoId: UsersPhotos["photoId"]
+  ) => {
     try {
       await this.photoRepository.unlockPhoto(userId, photoId);
     } catch (err) {
@@ -57,21 +52,23 @@ export class PhotoService {
     }
   };
 
-  unlockFolder = async (userId: string, folderId: string) => {
+  unlockFolder = async (userId: User["id"], folderId: Folder["id"]) => {
     try {
       const userPhotos = await this.photoRepository.getUserPhotos(userId);
-      userPhotos.forEach(async (p) => {
-        const photo = await this.photoRepository.getPhoto(p.photoId);
-        if (photo.folderId === folderId) {
-          await this.unlockPhoto(userId, photo.id);
-        }
-      });
+      await Promise.all(
+        userPhotos.map(async (p) => {
+          const photo = await this.photoRepository.getPhoto(p.photoId);
+          if (photo.folderId === folderId) {
+            await this.unlockPhoto(userId, photo.id);
+          }
+        })
+      );
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
   };
 
-  unmarkUserOnPhotos = async (userId: string) => {
+  unmarkUserOnPhotos = async (userId: UsersPhotos["userId"]) => {
     try {
       await this.photoRepository.unmarkUserOnPhotos(userId);
     } catch (err) {

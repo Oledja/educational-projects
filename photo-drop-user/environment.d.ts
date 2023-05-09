@@ -23,6 +23,7 @@ declare global {
       ICON_PHOTO_S3_FOLDER: string;
       ICON_PHOTO_WITH_WATER_MARK_S3_FOLDER: string;
       SELFIE_S3_FOLDER: string;
+      SUCCESS_URL: string;
     }
   }
 }
