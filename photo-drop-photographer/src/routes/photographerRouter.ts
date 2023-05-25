@@ -1,9 +1,11 @@
 import { Router } from "express";
 import { PhotographerController } from "../controllers/PhorographerController";
-import { auth } from "../middlewares/auth";
 
 const photographerRouter = Router();
 const photographerController = new PhotographerController();
+
+photographerRouter.post("/signup", photographerController.signUp);
+photographerRouter.post("/signin", photographerController.login);
 
 photographerRouter.get(
   "/photographers/:id",
@@ -12,15 +14,6 @@ photographerRouter.get(
 photographerRouter.get(
   "/photographers",
   photographerController.getPhotographers
-);
-photographerRouter.put(
-  "/photographers",
-  auth,
-  photographerController.updatePhotographer
-);
-photographerRouter.delete(
-  "/photographers/:id",
-  photographerController.deletePhotographer
 );
 
 export { photographerRouter };

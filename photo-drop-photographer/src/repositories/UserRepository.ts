@@ -1,12 +1,6 @@
 import { NodePgDatabase, drizzle } from "drizzle-orm/node-postgres";
 import { pool } from "../db/connection";
-import {
-  Photo,
-  User,
-  UsersPhotos,
-  users,
-  usersPhotos,
-} from "../db/schema/schema";
+import { User, users } from "../db/schema/schema";
 import { eq } from "drizzle-orm/expressions";
 
 export class UserRepository {
@@ -20,12 +14,5 @@ export class UserRepository {
 
   getUsers = async (): Promise<User[]> => {
     return await this.db.select().from(users);
-  };
-
-  getMarkedUsers = async (photoId: Photo["id"]): Promise<UsersPhotos[]> => {
-    return await this.db
-      .select()
-      .from(usersPhotos)
-      .where(eq(usersPhotos.photoId, photoId));
   };
 }

@@ -8,10 +8,8 @@ import { pool } from "./db/connection";
 import { photographerRouter } from "./routes/photographerRouter";
 import bodyParser from "body-parser";
 import morgan from "morgan";
-import { folderRouter } from "./routes/folderRouter";
-import { registrationRouter } from "./routes/registrationRouter";
+import { albumRouter } from "./routes/albumRouter";
 import { userRouter } from "./routes/userRouter";
-import { photoRouter } from "./routes/photoRouter";
 
 dotenv.config();
 
@@ -35,14 +33,7 @@ app.use(
   })
 );
 app.set("trust proxy", true);
-app.use(
-  "/api/v1",
-  registrationRouter,
-  photographerRouter,
-  folderRouter,
-  userRouter,
-  photoRouter
-);
+app.use("/api/v1", photographerRouter, albumRouter, userRouter);
 app.listen(port, async () => {
   const db = drizzle(pool);
   await migrate(db, { migrationsFolder: "./migrations" });

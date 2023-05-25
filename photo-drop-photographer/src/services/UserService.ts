@@ -1,4 +1,4 @@
-import { Photo } from "../db/schema/schema";
+import { Photo, User } from "../db/schema/schema";
 import { UserRepository } from "../repositories/UserRepository";
 import { ResponseUserDTO } from "../types/dto/user/ResponseUserDTO";
 import { getErrorMessage } from "../utils/getErrorMessage";
@@ -6,39 +6,27 @@ import { getErrorMessage } from "../utils/getErrorMessage";
 export class UserService {
   private userRepository = new UserRepository();
 
-  getUsers = async (): Promise<ResponseUserDTO[]> => {
+  getUser = async (userId: User["id"]): Promise<User> => {
     try {
-      const users = await this.userRepository.getUsers();
-      const responseUsers: ResponseUserDTO[] = users.map((user) => {
-        const { id, phone, email } = user;
-        return {
-          id,
-          phone,
-          email,
-        };
-      });
-      return responseUsers;
+      return await this.userRepository.getUser(userId);
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
   };
 
-  getMarkedUsers = async (photoId: Photo["id"]): Promise<ResponseUserDTO[]> => {
+  getUsers = async (): Promise<ResponseUserDTO[]> => {
     try {
-      const result = await this.userRepository.getMarkedUsers(photoId);
-      const usersId = result.map((r) => r.userId);
-      return Promise.all(
-        usersId.map(async (userId) => {
-          const { id, phone, email } = await this.userRepository.getUser(
-            userId
-          );
-          return {
-            id,
-            phone,
-            email,
-          };
-        })
-      );
+      const users = await this.userRepository.getUsers();
+      const responseUsers: ResponseUserDTO[] = users.map((user) => {
+        const { id, phone, email, name } = user;
+        return {
+          id,
+          name,
+          phone,
+          email,
+        };
+      });
+      return responseUsers;
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }

@@ -6,19 +6,19 @@ import { S3Service } from "./S3Service";
 import { readFileSync } from "fs";
 import * as dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
-import { Folder, Photo, User } from "../db/schema/schema";
-import { UserService } from "./UserService";
+import { Album, Photo, User } from "../db/schema/schema";
 import { getFolderEnv } from "../utils/envUtils";
+import { sendMessage } from "../bot/telegeamBot";
 
 dotenv.config();
 
 const waterMarkPath = process.env.WATER_MARK_PATH;
 const iconWaterMarkPath = process.env.ICON_WATER_MARK_PATH;
 const s3Bucket = process.env.AWS_S3_BUCKET_NAME;
+const chatId = process.env.TELEGRAM_CHAT_ID;
 
 export class PhotoService {
   private photoRepository = new PhotoRepository();
-  private userService = new UserService();
   private s3Service = new S3Service();
   private photoUtils = new PhotoUtils(400, 400);
   private waterMark: Buffer;
@@ -37,9 +37,46 @@ export class PhotoService {
     }
   };
 
-  getPhotosByFolderId = async (folderId: Folder["id"]): Promise<Photo[]> => {
+  getPhotosByFolderId = async (albumId: Album["id"]): Promise<Photo[]> => {
     try {
-      return await this.photoRepository.getFolderPhotos(folderId);
+      return await this.photoRepository.getAlbumPhotos(albumId);
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
+  };
+
+  addPhotos = async (
+    albumId: Album["id"],
+    photos: Express.Multer.File[]
+  ): Promise<ResponsePhotoDTO[]> => {
+    try {
+      return await Promise.all(
+        photos.map(async (photo) => {
+          const usersIds = photo.fieldname.split(",");
+          console.log(usersIds);
+
+          const link = await this.savePhoto(photo);
+          const photoId = await this.addPhotoToAlbum(albumId, link);
+          await Promise.all(
+            usersIds.map(async (userId) => {
+              await this.markUserOnPhoto(userId, photoId, albumId);
+            })
+          );
+          const largePhotoUrl = await this.getPhotoUrl(
+            link,
+            getFolderEnv("LARGE_PHOTO_S3_FOLDER")
+          );
+          const iconPhotoUrl = await this.getPhotoUrl(
+            link,
+            getFolderEnv("ICON_PHOTO_S3_FOLDER")
+          );
+          return {
+            id: photoId,
+            largePhotoUrl,
+            iconPhotoUrl,
+          };
+        })
+      );
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
@@ -57,91 +94,77 @@ export class PhotoService {
     }
   };
 
-  addPhotos = async (folderId: Folder["id"], photos: Express.Multer.File[]) => {
+  private savePhoto = async (photo: Express.Multer.File): Promise<string> => {
     try {
-      await Promise.all(
-        photos.map(async (photo) => {
-          const { buffer, originalname } = photo;
-          const key = `${uuidv4()}-${originalname}`;
-          await this.photoRepository.addPhotoToFolder(folderId, key);
-          const photoWithWaterMark = await this.photoUtils.addWatermark(
-            buffer,
-            this.waterMark
-          );
-          const icon = await this.photoUtils.resize(buffer);
-          const iconWithWaterMark = await this.photoUtils.resizeAndAddWatermark(
-            buffer,
-            this.iconWaterMark
-          );
-          const params: PutObjectRequest[] = [
-            {
-              Bucket: s3Bucket,
-              Key: `${getFolderEnv(
-                "LARGE_PHOTO_WITH_WATER_MARK_S3_FOLDER"
-              )}/${key}`,
-              Body: photoWithWaterMark,
-            },
-            {
-              Bucket: s3Bucket,
-              Key: `${getFolderEnv("ICON_PHOTO_S3_FOLDER")}/${key}`,
-              Body: icon,
-            },
-            {
-              Bucket: s3Bucket,
-              Key: `${getFolderEnv(
-                "ICON_PHOTO_WITH_WATER_MARK_S3_FOLDER"
-              )}/${key}`,
-              Body: iconWithWaterMark,
-            },
-            {
-              Bucket: s3Bucket,
-              Key: `${getFolderEnv("LARGE_PHOTO_S3_FOLDER")}/${key}`,
-              Body: buffer,
-            },
-          ];
-          params.forEach(this.s3Service.savePhoto);
-        })
-      );
-    } catch (err) {
-      throw new Error(getErrorMessage(err));
-    }
-  };
+      const { buffer, originalname } = photo;
+      const key = `${uuidv4()}-${originalname}`;
 
-  deletePhoto = async (photoId: Photo["id"]) => {
-    try {
-      const { link } = await this.photoRepository.getPhoto(photoId);
-      const markedUsers = await this.userService.getMarkedUsers(photoId);
-      await Promise.all(
-        markedUsers.map(
-          async (user) => await this.unmarkUserOnPhoto(user.id, photoId)
-        )
+      const photoWithWaterMark = await this.photoUtils.addWatermark(
+        buffer,
+        this.waterMark
       );
-      await this.photoRepository.deletePhoto(photoId);
-      const keys: string[] = [
-        `${getFolderEnv("LARGE_PHOTO_S3_FOLDER")}/${link}`,
-        `${getFolderEnv("LARGE_PHOTO_WITH_WATER_MARK_S3_FOLDER")}/${link}`,
-        `${getFolderEnv("ICON_PHOTO_S3_FOLDER")}/${link}`,
-        `${getFolderEnv("ICON_PHOTO_WITH_WATER_MARK_S3_FOLDER")}/${link}`,
+      const icon = await this.photoUtils.resize(buffer);
+      const iconWithWaterMark = await this.photoUtils.resizeAndAddWatermark(
+        buffer,
+        this.iconWaterMark
+      );
+      const params: PutObjectRequest[] = [
+        {
+          Bucket: s3Bucket,
+          Key: `${getFolderEnv(
+            "LARGE_PHOTO_WITH_WATER_MARK_S3_FOLDER"
+          )}/${key}`,
+          Body: photoWithWaterMark,
+        },
+        {
+          Bucket: s3Bucket,
+          Key: `${getFolderEnv("ICON_PHOTO_S3_FOLDER")}/${key}`,
+          Body: icon,
+        },
+        {
+          Bucket: s3Bucket,
+          Key: `${getFolderEnv("ICON_PHOTO_WITH_WATER_MARK_S3_FOLDER")}/${key}`,
+          Body: iconWithWaterMark,
+        },
+        {
+          Bucket: s3Bucket,
+          Key: `${getFolderEnv("LARGE_PHOTO_S3_FOLDER")}/${key}`,
+          Body: buffer,
+        },
       ];
-      keys.forEach(this.s3Service.deletePhoto);
+      await Promise.all(params.map(this.s3Service.savePhoto));
+      return key;
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
   };
 
-  markUserOnPhoto = async (userId: User["id"], photoId: Photo["id"]) => {
+  private addPhotoToAlbum = async (
+    albumId: string,
+    link: string
+  ): Promise<string> => {
     try {
-      await this.photoRepository.markUserOnPhoto(userId, photoId);
+      const { id } = await this.photoRepository.addPhotoToAlbum(albumId, link);
+      return id;
     } catch (err) {
-      throw new Error(
-        `User with id: <${userId}> already marked on the photo with id: <${photoId}>`
-      );
+      throw new Error(getErrorMessage(err));
     }
   };
 
-  unmarkUserOnPhoto = async (userId: User["id"], photoId: Photo["id"]) => {
+  private markUserOnPhoto = async (
+    userId: string,
+    photoId: string,
+    albumId: string
+  ) => {
     try {
-      await this.photoRepository.unmarkUserOnPhoto(userId, photoId);
+      const isAlbumExists = await this.photoRepository.isUserAlbumExists(
+        userId,
+        albumId
+      );
+      if (!isAlbumExists) {
+        sendMessage(chatId, albumId);
+      }
+      await this.photoRepository.markUserOnPhoto(userId, photoId, albumId);
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }

@@ -8,7 +8,9 @@ import { UpdatePhotographerDTO } from "../types/dto/photographer/UpdatePhotograp
 export class PhotographerRepository {
   private db: NodePgDatabase = drizzle(pool);
 
-  getPhotographer = async (photographerId: string): Promise<Photographer> => {
+  getPhotographer = async (
+    photographerId: Photographer["id"]
+  ): Promise<Photographer> => {
     const [result] = await this.db
       .select()
       .from(photographers)
@@ -20,7 +22,9 @@ export class PhotographerRepository {
     return result;
   };
 
-  getPhotographerByLogin = async (login: string): Promise<Photographer> => {
+  getPhotographerByLogin = async (
+    login: Photographer["login"]
+  ): Promise<Photographer> => {
     const [result] = await this.db
       .select()
       .from(photographers)
@@ -43,21 +47,5 @@ export class PhotographerRepository {
       .returning();
     if (!result) throw new Error("Saving failed");
     return result;
-  };
-
-  updatePhotographer = async (
-    photographerId: string,
-    update: UpdatePhotographerDTO
-  ) => {
-    await this.db
-      .update(photographers)
-      .set(update)
-      .where(eq(photographers.id, photographerId));
-  };
-
-  deletePhotographer = async (photographerId: string) => {
-    await this.db
-      .delete(photographers)
-      .where(eq(photographers.id, photographerId));
   };
 }

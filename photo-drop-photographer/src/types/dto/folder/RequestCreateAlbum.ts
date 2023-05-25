@@ -1,4 +1,4 @@
-export type RequestCreateFolder = {
+export type RequestCreateAlbum = {
   name: string;
   location: string;
   date: string;

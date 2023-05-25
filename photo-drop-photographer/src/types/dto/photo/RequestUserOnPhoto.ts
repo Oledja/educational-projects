@@ -1,3 +1,3 @@
-export type RequestUserOnPhoto = {
-  userId: string;
+export type RequestUsersOnPhoto = {
+  usersIds: string[];
 };

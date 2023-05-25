@@ -9,11 +9,18 @@ import { LoginResponse } from "../types/dto/photographer/LoginResponse";
 export class RegistrationService {
   private photographerRepository = new PhotographerRepository();
 
-  registration = async (
+  signUp = async (
     photographer: CreatePhotographerDTO
   ): Promise<ResponsePhotographerDTO> => {
     try {
-      return await this.photographerRepository.createPhotographer(photographer);
+      const { id, login, email, fullname } =
+        await this.photographerRepository.createPhotographer(photographer);
+      return {
+        id,
+        login,
+        email,
+        fullname,
+      };
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
@@ -26,10 +33,15 @@ export class RegistrationService {
         const photographer =
           await this.photographerRepository.getPhotographerByLogin(login);
         if (photographer.password !== password) throw new Error();
-        const { id } = photographer;
+        const { id, email, fullname } = photographer;
         const token = generateAccessToken(id, login);
         return {
-          photographer,
+          photographer: {
+            id,
+            login,
+            email,
+            fullname,
+          },
           accessToken: token,
         };
       } catch (err) {

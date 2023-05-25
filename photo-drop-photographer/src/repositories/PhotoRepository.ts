@@ -1,14 +1,7 @@
 import { NodePgDatabase, drizzle } from "drizzle-orm/node-postgres";
 import { pool } from "../db/connection";
-import {
-  Folder,
-  Photo,
-  User,
-  UsersPhotos,
-  photos,
-  usersPhotos,
-} from "../db/schema/schema";
-import { eq } from "drizzle-orm/expressions";
+import { Album, Photo, User, photos, usersPhotos } from "../db/schema/schema";
+import { and, eq } from "drizzle-orm/expressions";
 
 export class PhotoRepository {
   private db: NodePgDatabase = drizzle(pool);
@@ -22,39 +15,39 @@ export class PhotoRepository {
     return result;
   };
 
-  getFolderPhotos = async (folderId: Folder["id"]): Promise<Photo[]> => {
+  getAlbumPhotos = async (albumId: Album["id"]): Promise<Photo[]> => {
     return await this.db
       .select()
       .from(photos)
-      .where(eq(photos.folderId, folderId));
+      .where(eq(photos.albumId, albumId));
   };
 
-  addPhotoToFolder = async (folderId: Folder["id"], link: Photo["link"]) => {
-    await this.db.insert(photos).values({ folderId, link });
+  addPhotoToAlbum = async (albumId: Album["id"], link: Photo["link"]) => {
+    const [result] = await this.db
+      .insert(photos)
+      .values({ albumId, link })
+      .returning({ id: photos.id });
+    return result;
   };
 
-  deletePhoto = async (photoId: Photo["id"]) => {
-    await this.db.delete(photos).where(eq(photos.id, photoId));
+  markUserOnPhoto = async (
+    userId: User["id"],
+    photoId: Photo["id"],
+    albumId: Album["id"]
+  ) => {
+    await this.db.insert(usersPhotos).values({ userId, photoId, albumId });
   };
 
-  getMarkedUsersOnPhoto = async (
-    photoId: Photo["id"]
-  ): Promise<UsersPhotos[]> => {
-    return await this.db
+  isUserAlbumExists = async (
+    userId: User["id"],
+    albumId: Album["id"]
+  ): Promise<boolean> => {
+    const [result] = await this.db
       .select()
       .from(usersPhotos)
-      .where(eq(usersPhotos.photoId, photoId));
-  };
-
-  markUserOnPhoto = async (userId: User["id"], photoId: Photo["id"]) => {
-    await this.db.insert(usersPhotos).values({ userId, photoId });
-  };
-
-  unmarkUserOnPhoto = async (userId: User["id"], photoId: Photo["id"]) => {
-    await this.db
-      .delete(usersPhotos)
       .where(
-        eq(usersPhotos.userId, userId) && eq(usersPhotos.photoId, photoId)
+        and(eq(usersPhotos.albumId, albumId), eq(usersPhotos.userId, userId))
       );
+    return result ? true : false;
   };
 }
