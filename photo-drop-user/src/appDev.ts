@@ -10,8 +10,8 @@ import { pool } from "./db/connection";
 import { userRouter } from "./routes/userRouter";
 import { registrationRouter } from "./routes/registrationRouter";
 import { photoRouter } from "./routes/photoRouter";
-import { folderRouter } from "./routes/folderRouter";
 import { storeRouter } from "./routes/storeRouter";
+import { albumRouter } from "./routes/albumRouter";
 
 dotenv.config();
 
@@ -40,8 +40,7 @@ app.use(
   userRouter,
   registrationRouter,
   photoRouter,
-  folderRouter,
-  storeRouter,
+  albumRouter,
   storeRouter
 );
 app.listen(port, async () => {

@@ -1,7 +1,8 @@
-import { sendCode } from "../bot/telegeamBot";
+import { sendOTP } from "../bot/telegeamBot";
 import { User } from "../db/schema/schema";
 import { LoginResponse } from "../dto/LoginResponse";
 import { CreateUserDTO } from "../dto/user/CreateUserDTO";
+import { LoginUserDTO } from "../dto/user/LoginUserDTO";
 import { UpdateUserDTO } from "../dto/user/UpdateUserDTO";
 import { UserRepository } from "../repositories/UserRepository";
 import { getFolderEnv } from "../utils/envUtils";
@@ -23,11 +24,9 @@ export class RegistrationService {
   private userRepository = new UserRepository();
   private s3Service = new S3Service();
 
-  login = async (
-    phone: User["phone"],
-    code: User["verificationCode"]
-  ): Promise<LoginResponse> => {
+  signIn = async (login: LoginUserDTO): Promise<LoginResponse> => {
     try {
+      const { code, phone } = login;
       const user = await this.userRepository.getUserByPhone(phone);
       if (!user) throw new Error(`User with phone: <${phone}> doesn't exists`);
       const { id, verificationCode, codeGenerationTime, selfie } = user;
@@ -58,7 +57,7 @@ export class RegistrationService {
     }
   };
 
-  verification = async (phone: User["phone"]) => {
+  otp = async (phone: User["phone"]) => {
     try {
       const user = await this.userRepository.getUserByPhone(phone);
       const code = generateCode(codeLength);
@@ -76,7 +75,7 @@ export class RegistrationService {
         };
         await this.userRepository.createUser(create);
       }
-      await sendCode(chatId, code, phone);
+      await sendOTP(chatId, code);
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }

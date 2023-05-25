@@ -8,40 +8,80 @@ import { PutObjectRequest } from "aws-sdk/clients/s3";
 import { S3Service } from "./S3Service";
 import { ResponseUserDTO } from "../dto/user/ResponseUserDTO";
 import { User } from "../db/schema/schema";
+import {
+  generateCode,
+  isCodeTimeExpired,
+} from "../utils/verificationCodeUtils";
+import { sendOTP } from "../bot/telegeamBot";
+import { UpdateUserPhoneDTO } from "../dto/user/UpdateUserPhoneDTO";
 
 dotenv.config();
 
 const selfieFolder = process.env.SELFIE_S3_FOLDER;
 const s3Bucket = process.env.AWS_S3_BUCKET_NAME;
+const codeLength = process.env.VERIFICATION_CODE_LENGTH;
+const chatId = process.env.TELEGRAM_CHAT_ID;
 
 export class UserService {
   private userRepository = new UserRepository();
-  private photoService = new PhotoService();
   private s3Service = new S3Service();
 
   getUser = async (userId: User["id"]): Promise<ResponseUserDTO> => {
     try {
-      const user = await this.userRepository.getUser(userId);
-      if (user.selfie) {
-        const selfieKey = `${selfieFolder}/${user.selfie}`;
+      let { id, selfie, name, phone, email } =
+        await this.userRepository.getUser(userId);
+      if (selfie) {
+        const selfieKey = `${selfieFolder}/${selfie}`;
         const selfieUrl = await this.s3Service.getPhotoUrl(selfieKey);
-        user.selfie = selfieUrl;
+        selfie = selfieUrl;
       }
       return {
-        id: user.id,
-        selfie: user.selfie,
-        name: user.name,
-        phone: user.phone,
-        email: user.email,
+        id,
+        selfie,
+        name,
+        phone,
+        email,
       };
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
   };
 
-  updateUser = async (userId: User["id"], update: UpdateUserDTO) => {
+  updatePhoneOTP = async (userId: User["id"], phone: string) => {
     try {
+      const code = generateCode(codeLength);
+      const update: UpdateUserDTO = {
+        verificationCode: code,
+        codeGenerationTime: new Date(),
+      };
       await this.userRepository.updateUser(userId, update);
+      await sendOTP(chatId, code);
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
+  };
+
+  updateUserPhone = async (userId: string, update: UpdateUserPhoneDTO) => {
+    try {
+      const { code, phone } = update;
+      const { verificationCode, codeGenerationTime } =
+        await this.userRepository.getUser(userId);
+      if (code !== verificationCode)
+        throw new Error("The provided code is incorrect");
+      if (isCodeTimeExpired(codeGenerationTime))
+        throw new Error("The provided code has expired");
+      await this.userRepository.updateUser(userId, {
+        verificationCode: "",
+        phone,
+      });
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
+  };
+
+  updateUserName = async (userId: User["id"], name: string) => {
+    try {
+      await this.userRepository.updateUser(userId, { name });
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }
@@ -56,40 +96,8 @@ export class UserService {
         Key: `${selfieFolder}/${key}`,
         Body: buffer,
       };
-      const { selfie } = await this.userRepository.getUser(userId);
-      if (selfie) {
-        const key = `${selfieFolder}/${selfie}`;
-        await this.s3Service.deletePhoto(key);
-      }
-      await this.userRepository.updateUser(userId, { selfie: key });
       await this.s3Service.savePhoto(param);
-    } catch (err) {
-      throw new Error(getErrorMessage(err));
-    }
-  };
-
-  deleteUserSelfie = async (userId: User["id"]) => {
-    try {
-      const { selfie } = await this.userRepository.getUser(userId);
-      if (!selfie)
-        throw new Error(`Selfie for user with id: <${userId}> was not set`);
-      const key = `${selfieFolder}/${selfie}`;
-      await this.s3Service.deletePhoto(key);
-      await this.userRepository.updateUser(userId, { selfie: null });
-    } catch (err) {
-      throw new Error(getErrorMessage(err));
-    }
-  };
-
-  deleteUser = async (userId: User["id"]) => {
-    try {
-      const { selfie } = await this.userRepository.getUser(userId);
-      if (selfie) {
-        const key = `${selfieFolder}/${selfie}`;
-        await this.s3Service.deletePhoto(key);
-      }
-      await this.photoService.unmarkUserOnPhotos(userId);
-      await this.userRepository.deleteUser(userId);
+      await this.userRepository.updateUser(userId, { selfie: key });
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }

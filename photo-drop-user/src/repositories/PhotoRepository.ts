@@ -35,8 +35,4 @@ export class PhotoRepository {
         eq(usersPhotos.userId, userId) && eq(usersPhotos.photoId, photoId)
       );
   };
-
-  unmarkUserOnPhotos = async (userId: UsersPhotos["userId"]) => {
-    await this.db.delete(usersPhotos).where(eq(usersPhotos.userId, userId));
-  };
 }

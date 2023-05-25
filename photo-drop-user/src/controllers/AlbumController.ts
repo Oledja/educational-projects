@@ -1,26 +1,26 @@
-import { FolderService } from "../services/FolderService";
 import { Request, Response } from "express";
 import { getErrorMessage } from "../utils/getErrorMessage";
 import { CustomRequest } from "../interfaces/CustomRequest";
+import { AlbumService } from "../services/AlbumService";
 
-export class FolderController {
-  private folderService = new FolderService();
+export class AlbumController {
+  private albumService = new AlbumService();
 
-  getUserFolder = async (req: Request, res: Response) => {
+  getUserAlbum = async (req: Request, res: Response) => {
     try {
       const { id } = req as CustomRequest;
-      const { folderId } = req.body;
-      const response = await this.folderService.getUserFolder(id, folderId);
+      const { albumId } = req.params;
+      const response = await this.albumService.getUserAlbum(id, albumId);
       res.status(200).json(response);
     } catch (err) {
       res.status(500).json(getErrorMessage(err));
     }
   };
 
-  getUserFolders = async (req: Request, res: Response) => {
+  getUserAlbums = async (req: Request, res: Response) => {
     try {
       const { id } = req as CustomRequest;
-      const response = await this.folderService.getUserFolders(id);
+      const response = await this.albumService.getUserAlbums(id);
       res.status(200).json(response);
     } catch (err) {
       res.status(500).json(getErrorMessage(err));

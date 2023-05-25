@@ -9,14 +9,14 @@ const userRouter = Router();
 const userController = new UserController();
 
 userRouter.get("/users", auth, userController.getUser);
-userRouter.post("/users", auth, userController.updateUser);
-userRouter.post(
+userRouter.post("/users/phone/otp", auth, userController.updateUserPhoneOTP);
+userRouter.patch("/users/phone", auth, userController.updateUserPhone);
+userRouter.patch("/users/name", auth, userController.updateUserName);
+userRouter.patch(
   "/users/selfie",
   multipleUpload.any(),
   auth,
   userController.updateUserSelfie
 );
-userRouter.delete("/users/selfie", auth, userController.deleteUserSelfie);
-userRouter.delete("/users", auth, userController.deleteUser);
 
 export { userRouter };

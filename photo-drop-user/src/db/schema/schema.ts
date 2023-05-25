@@ -16,7 +16,7 @@ export const photographers = pgTable(
   })
 );
 
-export const folders = pgTable("folders", {
+export const albums = pgTable("albums", {
   id: uuid("id").defaultRandom().primaryKey().notNull(),
   name: varchar("name").notNull(),
   location: varchar("location").notNull(),
@@ -29,8 +29,8 @@ export const folders = pgTable("folders", {
 export const photos = pgTable("photos", {
   id: uuid("id").defaultRandom().primaryKey().notNull(),
   link: varchar("link").notNull(),
-  folderId: uuid("folderId")
-    .references(() => folders.id)
+  albumId: uuid("albumId")
+    .references(() => albums.id)
     .notNull(),
 });
 
@@ -58,6 +58,10 @@ export const usersPhotos = pgTable(
       .notNull()
       .references(() => photos.id),
     isUnlocked: boolean("isUnlocked").default(false).notNull(),
+    albumId: uuid("albumId")
+      .notNull()
+      .references(() => albums.id),
+    createdAt: date("createdAt").default(new Date().toDateString()),
   },
   (usersPhotos) => ({
     cpk: primaryKey(usersPhotos.userId, usersPhotos.photoId),
@@ -65,7 +69,7 @@ export const usersPhotos = pgTable(
 );
 
 export type Photographer = InferModel<typeof photographers>;
-export type Folder = InferModel<typeof folders>;
+export type Album = InferModel<typeof albums>;
 export type Photo = InferModel<typeof photos>;
 export type User = InferModel<typeof users>;
 export type UsersPhotos = InferModel<typeof usersPhotos>;

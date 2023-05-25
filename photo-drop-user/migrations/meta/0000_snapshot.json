@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "36ef4482-fa15-4317-9932-d0f972acec91",
+  "id": "2b068a5b-9e93-4b9d-be43-56575f44973a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "folders": {
@@ -165,6 +165,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "phone": {
           "name": "phone",
           "type": "varchar",
@@ -224,6 +230,19 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "folderId": {
+          "name": "folderId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Wed May 17 2023'"
         }
       },
       "indexes": {},
@@ -247,6 +266,19 @@
           "tableTo": "photos",
           "columnsFrom": [
             "photoId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "usersPhotos_folderId_folders_id_fk": {
+          "name": "usersPhotos_folderId_folders_id_fk",
+          "tableFrom": "usersPhotos",
+          "tableTo": "folders",
+          "columnsFrom": [
+            "folderId"
           ],
           "columnsTo": [
             "id"

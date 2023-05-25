@@ -7,7 +7,6 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 
 const bot = new TelegramBot(token, { polling: true });
 
-export const sendCode = async (chatId: number, code: string, phone: string) => {
-  const message = `Verification code: ${code} for phone: ${phone}`;
-  await bot.sendMessage(chatId, message);
+export const sendOTP = async (chatId: number, code: string) => {
+  await bot.sendMessage(chatId, code);
 };

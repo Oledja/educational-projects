@@ -1,6 +1,6 @@
 type ResponsePhotoDTO = {
   id: string;
-  folderId: string;
+  albumId: string;
   largePhotoUrl: string;
   iconPhotoUrl: string;
 };

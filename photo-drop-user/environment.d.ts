@@ -13,6 +13,8 @@ declare global {
       KEY_PATH: string;
       AWS_S3_BUCKET_NAME: string;
       REGION: string;
+      AWS_ACCESS_KEY: string;
+      AWS_SECRET_KEY: string;
       JWT_SECRET_KEY: string;
       TIME_OF_ACTION_VERIFICATION_CODE: number;
       VERIFICATION_CODE_LENGTH: number;
@@ -24,6 +26,7 @@ declare global {
       ICON_PHOTO_WITH_WATER_MARK_S3_FOLDER: string;
       SELFIE_S3_FOLDER: string;
       SUCCESS_URL: string;
+      UNLOCK_ALBUM_URL: string;
     }
   }
 }

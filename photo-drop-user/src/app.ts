@@ -9,11 +9,11 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import { readFileSync } from "fs";
 import https from "https";
-import { folderRouter } from "./routes/folderRouter";
 import { photoRouter } from "./routes/photoRouter";
 import { registrationRouter } from "./routes/registrationRouter";
 import { storeRouter } from "./routes/storeRouter";
 import { userRouter } from "./routes/userRouter";
+import { albumRouter } from "./routes/albumRouter";
 
 dotenv.config();
 
@@ -48,8 +48,7 @@ app.use(
   userRouter,
   registrationRouter,
   photoRouter,
-  folderRouter,
-  storeRouter,
+  albumRouter,
   storeRouter
 );
 httpsServer.listen(port, async () => {

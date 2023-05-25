@@ -5,16 +5,7 @@ import { auth } from "../middlewares/auth";
 const storeRouter = Router();
 const storeController = new StoreController();
 
-storeRouter.post("/store/buy/photos/:photoId", auth, storeController.buyPhoto);
-storeRouter.post(
-  "/store/buy/folders/:folderId",
-  auth,
-  storeController.buyFolder
-);
-storeRouter.get("/store/photos/:photoId/:userId", storeController.unlockPhoto);
-storeRouter.get(
-  "/store/folders/:folderId/:userId",
-  storeController.unlockFolder
-);
+storeRouter.post("/store/buy/albums/:albumId", auth, storeController.buyAlbum);
+storeRouter.get("/store/albums/:albumId/:userId", storeController.unlockAlbum);
 
 export { storeRouter };

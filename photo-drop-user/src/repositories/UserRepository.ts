@@ -34,8 +34,4 @@ export class UserRepository {
   updateUser = async (userId: User["id"], update: UpdateUserDTO) => {
     await this.db.update(users).set(update).where(eq(users.id, userId));
   };
-
-  deleteUser = async (userId: User["id"]) => {
-    await this.db.delete(users).where(eq(users.id, userId));
-  };
 }

@@ -6,45 +6,23 @@ import { getErrorMessage } from "../utils/getErrorMessage";
 export class StoreController {
   private storeService = new StoreService();
 
-  buyPhoto = async (req: Request, res: Response) => {
+  buyAlbum = async (req: Request, res: Response) => {
     try {
       const { id } = req as CustomRequest;
-      const { photoId } = req.params;
-      const response = await this.storeService.buyPhoto(id, photoId);
-      res.status(200).json(response);
-    } catch (err) {
-      res.status(500).json(getErrorMessage(err));
-    }
-  };
-
-  buyFolder = async (req: Request, res: Response) => {
-    try {
-      const { id } = req as CustomRequest;
-      const { folderId } = req.params;
-      const response = await this.storeService.buyFolder(id, folderId);
+      const { albumId } = req.params;
+      const response = await this.storeService.buyAlbum(id, albumId);
       res.status(200).json(response);
     } catch (err) {
       res.status(500).json(err);
     }
   };
 
-  unlockPhoto = async (req: Request, res: Response) => {
+  unlockAlbum = async (req: Request, res: Response) => {
     try {
-      const { photoId, userId } = req.params;
-      await this.storeService.unlockPhoto(userId, photoId);
-      res.status(200).json(`Photo with id: <${photoId}> unlocked successfully`);
-    } catch (err) {
-      res.status(500).json(getErrorMessage(err));
-    }
-  };
-
-  unlockFolder = async (req: Request, res: Response) => {
-    try {
-      const { folderId, userId } = req.params;
-      await this.storeService.unlockFolder(userId, folderId);
-      res
-        .status(200)
-        .json(`Folder with id: <${folderId}> unlocked successfully`);
+      const { albumId, userId } = req.params;
+      await this.storeService.unlockAlbum(userId, albumId);
+      res.writeHead(301, { Location: "http://google.com" });
+      res.end();
     } catch (err) {
       res.status(500).json(getErrorMessage(err));
     }
