@@ -1,10 +1,10 @@
 import { User } from "../db/schema/schema";
 import { CreateUserDTO } from "../dto/CreateUserDTO";
+import { RequestRestorePassword } from "../dto/RequestRestorePassword";
 import { UpdateUserDTO } from "../dto/UpdateUserDTO";
 import { UserRepository } from "../repositories/UserRepository";
 import { getErrorMessage } from "../utils/getErrorMessage";
-import { sendMail } from "../utils/mailSender";
-import { generatePassword } from "../utils/passwordGenerator";
+import { isCodeTimeExpired } from "../utils/recoveryCodeUtils";
 
 export class UserService {
   private userRepository = new UserRepository();
@@ -49,13 +49,20 @@ export class UserService {
     }
   };
 
-  resetPassword = async (email: User["email"]) => {
+  restorePassword = async (restore: RequestRestorePassword) => {
     try {
-      const { id } = await this.getUserByEmail(email);
-      const password = generatePassword();
-      const message = `Your new password: ${password}`;
-      await sendMail(email, message);
-      await this.updateUser(id, { password });
+      const { email, code, password } = restore;
+      const { id, recoveryCode, recoveryCodeCreatedAt } =
+        await this.getUserByEmail(email);
+      if (!recoveryCode || !recoveryCodeCreatedAt)
+        throw new Error("Password recovery request was not sent");
+      if (code !== recoveryCode) throw new Error("Recovery code is invalid");
+      if (isCodeTimeExpired(recoveryCodeCreatedAt))
+        throw new Error("Recovery code expired");
+      await this.updateUser(id, {
+        password,
+        recoveryCode: "",
+      });
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }

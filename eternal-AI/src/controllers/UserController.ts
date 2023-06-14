@@ -3,7 +3,11 @@ import { Request, Response } from "express";
 import { getErrorMessage } from "../utils/getErrorMessage";
 import { UpdateUserDTO } from "../dto/UpdateUserDTO";
 import { CustomRequest } from "../interfaces/CustomRequest";
-import { validateEmail, validateUpdateUserData } from "../utils/validations";
+import {
+  validateRestorePassword,
+  validateUpdateUserData,
+} from "../utils/validations";
+import { RequestRestorePassword } from "../dto/RequestRestorePassword";
 export class UserController {
   private userService = new UserService();
 
@@ -24,15 +28,15 @@ export class UserController {
     }
   };
 
-  resetPassword = async (req: Request, res: Response) => {
+  restorePassword = async (req: Request, res: Response) => {
     try {
-      const { email } = req.body;
-      const { error } = validateEmail(email);
+      const restore = req.body as RequestRestorePassword;
+      const { error } = validateRestorePassword(restore);
       if (error) {
         res.status(400).json(error.details[0].message);
         return;
       }
-      await this.userService.resetPassword(email);
+      await this.userService.restorePassword(restore);
       res.status(200);
       res.end();
     } catch (err) {

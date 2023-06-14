@@ -4,4 +4,6 @@ export type UpdateUserDTO = {
   phone?: string;
   password?: string;
   numberOfFreeQuestions?: number;
+  recoveryCode?: string;
+  recoveryCodeCreatedAt?: Date;
 };

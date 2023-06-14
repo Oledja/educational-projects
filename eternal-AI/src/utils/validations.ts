@@ -4,6 +4,7 @@ import { UpdateUserDTO } from "../dto/UpdateUserDTO";
 import { RequestQuestionDTO } from "../dto/RequestQuestionDTO";
 import { RequestFreeQuestion } from "../dto/RequestFreeQuestionDTO";
 import { RequestPaymentCardDTO } from "../dto/RequestPaymentCardDTO";
+import { RequestRestorePassword } from "../dto/RequestRestorePassword";
 
 export const validateLoginData = (login: RequestLoginDTO) => {
   const loginSchema = Joi.object({
@@ -60,4 +61,14 @@ export const validatePaymentCardData = (card: RequestPaymentCardDTO) => {
   });
 
   return cardSchema.validate(card);
+};
+
+export const validateRestorePassword = (restore: RequestRestorePassword) => {
+  const recoveryPasswordSchema = Joi.object({
+    email: Joi.string().email(),
+    code: Joi.string(),
+    password: Joi.string(),
+  });
+
+  return recoveryPasswordSchema.validate(restore);
 };

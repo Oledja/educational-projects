@@ -1,0 +1,1 @@
+ALTER TABLE "users" ALTER COLUMN "recoveryCode" SET DATA TYPE varchar;

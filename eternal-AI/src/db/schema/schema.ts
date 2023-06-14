@@ -5,7 +5,7 @@ import {
   varchar,
   uniqueIndex,
   integer,
-  primaryKey,
+  timestamp,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable(
@@ -19,6 +19,8 @@ export const users = pgTable(
     numberOfFreeQuestions: integer("numberOfFreeQuestions")
       .notNull()
       .default(5),
+    recoveryCode: varchar("recoveryCode"),
+    recoveryCodeCreatedAt: timestamp("recoveryCodeCreatedAt"),
   },
   (users) => ({ emailIdx: uniqueIndex("userEmailIdx").on(users.email) })
 );

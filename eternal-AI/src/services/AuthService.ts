@@ -1,8 +1,11 @@
+import { User } from "../db/schema/schema";
 import { CreateUserDTO } from "../dto/CreateUserDTO";
 import { ResponseLoginDTO } from "../dto/ResponseLoginDTO";
 import { getGoogleEnv } from "../utils/envUtils";
 import { getErrorMessage } from "../utils/getErrorMessage";
+import { sendMail } from "../utils/mailSender";
 import { generateAccessToken } from "../utils/tokenGenerator";
+import { generateRecoveryCode } from "../utils/recoveryCodeUtils";
 import { GoogleAuthService } from "./GoogleAuthService";
 import { SubscriptionService } from "./SubscriptionService";
 import { UserService } from "./UserService";
@@ -107,6 +110,21 @@ export class AuthService {
   getGoogleAuthUri = (): string => {
     try {
       return this.googleAuthService.getAuthUrl();
+    } catch (err) {
+      throw new Error(getErrorMessage(err));
+    }
+  };
+
+  sendRecoveryCode = async (email: User["email"]) => {
+    try {
+      const { id, name } = await this.userService.getUserByEmail(email);
+      const recoveryCode = generateRecoveryCode();
+      const recoveryCodeCreatedAt = new Date();
+      await sendMail(email, name, recoveryCode);
+      await this.userService.updateUser(id, {
+        recoveryCode,
+        recoveryCodeCreatedAt,
+      });
     } catch (err) {
       throw new Error(getErrorMessage(err));
     }

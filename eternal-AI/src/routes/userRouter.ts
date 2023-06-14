@@ -6,6 +6,6 @@ const userRouter = Router();
 const userConteroller = new UserController();
 
 userRouter.patch("/users", auth, userConteroller.updateUser);
-userRouter.patch("/users/forgot", userConteroller.resetPassword);
+userRouter.patch("/users/restore", userConteroller.restorePassword);
 
 export { userRouter };

@@ -18,6 +18,7 @@ declare global {
       PRODUCT_ID: string;
       CERT_PATH: string;
       KEY_PATH: string;
+      RECOVERY_CODE_TIME_ACTION_MS: number;
     }
   }
 }

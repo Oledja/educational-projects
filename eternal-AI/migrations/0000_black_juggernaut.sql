@@ -4,7 +4,9 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"password" varchar,
 	"name" varchar,
 	"phone" varchar,
-	"numberOfFreeQuestions" integer DEFAULT 5 NOT NULL
+	"numberOfFreeQuestions" integer DEFAULT 5 NOT NULL,
+	"recoveryCode" uuid,
+	"recoveryCodeCreatedAt" timestamp
 );
 
 CREATE TABLE IF NOT EXISTS "usersSubscriptions" (

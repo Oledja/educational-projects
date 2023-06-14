@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "845392cb-1f1c-460c-9927-1e67ef3889f4",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "9f9549dd-fcd3-4724-8725-2ea06a2ef2d5",
+  "prevId": "845392cb-1f1c-460c-9927-1e67ef3889f4",
   "tables": {
     "users": {
       "name": "users",
@@ -48,7 +48,7 @@
         },
         "recoveryCode": {
           "name": "recoveryCode",
-          "type": "uuid",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },

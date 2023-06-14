@@ -8,5 +8,6 @@ authRouter.get("/auth-uri", authController.getGoogleAuthUrl);
 authRouter.post("/signup", authController.signUp);
 authRouter.post("/signup/google", authController.signUpGoogle);
 authRouter.post("/login", authController.login);
+authRouter.post("/forgot", authController.sendRecoveryCode);
 
 export { authRouter };

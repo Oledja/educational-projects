@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { getErrorMessage } from "../utils/getErrorMessage";
 import { AuthService } from "../services/AuthService";
 import { RequestLoginDTO } from "../dto/RequestLoginDTO";
-import { validateLoginData } from "../utils/validations";
+import { validateEmail, validateLoginData } from "../utils/validations";
 
 export class AuthController {
   private authService = new AuthService();
@@ -40,8 +40,6 @@ export class AuthController {
   signUpGoogle = async (req: Request, res: Response) => {
     try {
       const code = req.query.code as string;
-      console.log(code);
-
       const response = await this.authService.signUpGoogle(code);
       res.status(200).json(response);
     } catch (err) {
@@ -53,6 +51,22 @@ export class AuthController {
     try {
       const response = this.authService.getGoogleAuthUri();
       res.status(200).json({ authUrl: response });
+    } catch (err) {
+      res.status(500).json(getErrorMessage(err));
+    }
+  };
+
+  sendRecoveryCode = async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+      const { error } = validateEmail(email);
+      if (error) {
+        res.status(400).json(error.details[0].message);
+        return;
+      }
+      await this.authService.sendRecoveryCode(email);
+      res.status(200);
+      res.end();
     } catch (err) {
       res.status(500).json(getErrorMessage(err));
     }
